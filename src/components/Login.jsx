@@ -41,11 +41,7 @@ function Login() {
       >
         Login
       </button>
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Saigon_University_August_16%2C_2018.jpg/1024px-Saigon_University_August_16%2C_2018.jpg"
-        alt="..."
-        className="img-circle img-responsive mt-3"
-      ></img>
+      <img src="" alt="..." className="img-circle img-responsive mt-3"></img>
     </div>
   );
 }
