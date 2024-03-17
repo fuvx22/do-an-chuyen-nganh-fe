@@ -2,6 +2,7 @@
   --primary-color: #45aff6;
   --primary-color-dark: #1084c7;
   --secondary-color: #2CFED5;
+  --gray-text: hsl(0, 0%, 40%);
 }
 
 * {
@@ -9,6 +10,25 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+  /* CSS cho thanh cuộn */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #adadad; /* Màu nền cho phần cuộn */
+    border-radius: 5px; /* Bo góc */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color-dark);/* Màu nền khi hover */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Màu nền cho track */
+    border-radius: 5px; /* Bo góc */
+  }
 
 button{
   &:focus {
@@ -89,6 +109,15 @@ button{
   color: white;
   height: 45px;
 
+  & .dropdown-menu {
+    cursor: pointer;
+  }
+
+  & .navbar-user-info:hover {
+    & .dropdown-menu {
+      display: block;
+    }
+  }
 }
 
 .side-menu {
@@ -128,4 +157,35 @@ button{
   &:hover {
     background-color: var(--primary-color-dark);
   }
+}
+
+.announcement-section, .guild.section {
+  max-height: 320px;
+  overflow: auto;
+  padding-bottom: 5px;
+}
+
+.announce-item {
+  flex-basis: 48%;
+  max-height: 120px;
+  overflow: hidden;
+  color: var(--gray-text);
+  border: 1px solid var(--primary-color-dark);
+  padding: 3px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.2);
+
+    & .announce-item-title {
+      color: #000;
+    }
+  }
+}
+
+.truncate {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
 }

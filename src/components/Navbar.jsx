@@ -15,13 +15,18 @@ function Navbar() {
       >
         <i className="fas fa-bars"></i>
       </button>
-      <div className="navbar-user-info d-flex h-100 .align-items-*-center">
-        <p className="navbar-user-name mx-2">Võ Ngọc Phú</p>
+      <div className="navbar-user-info d-flex h-100 .align-items-*-center position-relative">
+        <span className="navbar-user-name mx-2 ">Võ Ngọc Phú</span>
         <img
           className="navbar-user-img rounded-circle h-80"
           src="https://picsum.photos/200/200"
           alt=""
         />
+        <ul className="dropdown-menu dropdown-menu-right overflow-hidden py-0 end-0 top-100">
+          <li className="dropdown-item">Thông tin cá nhân</li>
+          <div className="dropdown-divider m-0"></div>
+          <li className="dropdown-item">Đăng xuất</li>
+        </ul>
       </div>
       <div
         className={
