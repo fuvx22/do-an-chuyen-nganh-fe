@@ -1,5 +1,5 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
+import React from "react";
+import Navbar from "../components/Navbar";
 
 function Dashboard() {
   const numberOfTimes = 10; // Số lần hiển thị thẻ div
@@ -24,7 +24,7 @@ function Dashboard() {
     <>
       <div className="col-12 col-sm-10 col-md-8 m-auto">
         <Navbar />
-        <div className="dashboard d-flex flex-column gap-3">
+        <div className="dashboard d-flex flex-column gap-3 ">
           <div className="announcement-section h-sx-100  mt-2 h-sx-auto">
             <h2>Thông báo</h2>
             <div className="announce-container d-sm-flex gap-2 flex-wrap align-item-center justify-content-center border-start border-2">
