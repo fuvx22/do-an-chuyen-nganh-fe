@@ -2,11 +2,54 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 
 function Dashboard() {
+  const numberOfTimes = 10; // Số lần hiển thị thẻ div
+  const divs = [];
+
+  // Sử dụng vòng lặp for để tạo mảng divs chứa các thẻ div
+  for (let i = 0; i < numberOfTimes; i++) {
+    divs.push(
+      <div className="announce-item rounded-2" key={i}>
+        <h4 className="announce-item-title">Thông báo đăng kí môn</h4>
+        <p className="anounce-content truncate">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam fugit
+          pariatur incidunt. Amet, sunt. Reprehenderit sit, dolorem distinctio
+          culpa, quod non omnis placeat iste quos nulla molestias est voluptatum
+          odio!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="col-12 col-sm-10 col-md-8 m-auto">
         <Navbar />
-        <div className="dashboard">This is dashboard</div>
+        <div className="dashboard d-flex flex-column gap-3">
+          <div className="announcement-section h-sx-100  mt-2 h-sx-auto">
+            <h2>Thông báo</h2>
+            <div className="announce-container d-sm-flex gap-2 flex-wrap align-item-center justify-content-center border-start border-2">
+              {divs}
+            </div>
+          </div>
+          <div className="guild-section">
+            <h2>Hướng dẫn</h2>
+            <div className="guild-container border-start border-2 ps-2">
+              <table className="table table-hover">
+                <tbody>
+                  <tr>
+                    <td>Hướng dẫn đăng kí học phần trực tuyến</td>
+                  </tr>
+                  <tr>
+                    <td>Những điểm lưu ý khi đăng kí học phần</td>
+                  </tr>
+                  <tr>
+                    <td>Hướng dẫn nộp biên bản</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
