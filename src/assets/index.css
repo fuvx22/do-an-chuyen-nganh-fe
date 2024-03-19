@@ -1,7 +1,7 @@
 :root {
   --primary-color: hsl(202, 92%, 33%);
   --primary-color-dark: hsl(202, 92%, 23%);
-  --secondary-color: #2CFED5;
+  --secondary-color: #2cfed5;
   --gray-text: hsl(0, 0%, 40%);
 }
 
@@ -11,27 +11,26 @@
   box-sizing: border-box;
 }
 
+/* CSS cho thanh cuộn */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-  /* CSS cho thanh cuộn */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: #adadad; /* Màu nền cho phần cuộn */
-    border-radius: 5px; /* Bo góc */
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--primary-color-dark);/* Màu nền khi hover */
-  }
-  
-  ::-webkit-scrollbar-track {
-    background-color: #f1f1f1; /* Màu nền cho track */
-    border-radius: 5px; /* Bo góc */
-  }
+::-webkit-scrollbar-thumb {
+  background-color: #adadad; /* Màu nền cho phần cuộn */
+  border-radius: 5px; /* Bo góc */
+}
 
-button{
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-color-dark); /* Màu nền khi hover */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Màu nền cho track */
+  border-radius: 5px; /* Bo góc */
+}
+
+button {
   &:focus {
     outline: none;
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
@@ -41,7 +40,7 @@ button{
 .login-container {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 80px auto;
 }
 
 .login-container .title {
@@ -49,7 +48,6 @@ button{
   font-size: 20px;
   font-weight: 600;
   padding-top: 30px;
-  
 }
 
 .login-container .text {
@@ -75,7 +73,7 @@ button{
   position: relative;
 }
 
-.login-container .password-input i{
+.login-container .password-input i {
   position: absolute;
   top: 17px;
   right: 10px;
@@ -146,10 +144,9 @@ button{
     font-weight: bold;
   }
 
-  &.active{
+  &.active {
     transform: translateX(0);
   }
-
 }
 
 .my-navbar button {
@@ -160,7 +157,8 @@ button{
   }
 }
 
-.announcement-section, .guild.section {
+.announcement-section,
+.guild.section {
   max-height: 320px;
   overflow: auto;
   padding-bottom: 5px;
@@ -185,8 +183,8 @@ button{
 }
 
 .truncate {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    -webkit-line-clamp: 3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
 }
