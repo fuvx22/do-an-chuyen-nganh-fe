@@ -40,8 +40,9 @@ function ScheduleTable() {
       <select
         class="form-select form-select-sm"
         aria-label=".form-select-sm example"
+        defaultValue={"2023-2024-2"}
       >
-        <option value="2023-2024-2" selected> Học kì 2 năm học 2023-2024</option>
+        <option value="2023-2024-2" > Học kì 2 năm học 2023-2024</option>
         <option value="2023-2024-1">Học kì 1 năm học 2023-2024</option>
         <option value="2022-2023-2">Học kì 2 năm học 2022-2023</option>
         <option value="2022-2023-1">Học kì 1 năm học 2022-2023</option>
