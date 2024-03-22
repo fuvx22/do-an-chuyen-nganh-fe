@@ -9,3 +9,8 @@ export const fetchCoursesAPI = async () => {
   const response = await axios.get(`${API_ROOT}/v1/course/`)
   return response.data
 }
+
+export const createNewCourseAPI = async (data) => {
+  const response = await axios.post(`${API_ROOT}/v1/course/`, data)
+  return response.data
+}
