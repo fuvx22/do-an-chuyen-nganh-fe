@@ -1,53 +1,41 @@
-import { useRef, useState } from "react";
+import { Children, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
+import { fetchCoursesAPI } from "../apis";
 
 let indexToEdit = -1;
 
 function CourseManage() {
   
-  let coursesData = [
-    {
-      id: "841476",
-      name: "Đồ án chuyên ngành (ngành KTPM)",
-      courseCredits: 4,
-      major: 123,
-    },
-    {
-      id: "841477",
-      name: "Đồ án chuyên ngành ",
-      courseCredits: 4,
-      major: 123,
-    },
-    {
-      id: "841472",
-      name: "Đồ án chuyên ",
-      courseCredits: 4,
-      major: 123,
-    },
-    {
-      id: "841471",
-      name: "Đồ án ",
-      courseCredits: 4,
-      major: 123,
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchCoursesAPI();
+        setCourses(data)
+      } catch (error) {
+      }
+    };
+
+    fetchData();
+  }, [])
 
   let majorsData = [
     {
-      id: "123",
+      _id: "65f2abc1934f2f23f4f2f534",
       name: "Công nghệ thông tin",
     },
     {
-      id: "234",
+      _id: "234",
       name: "Marketing",
     },
     {
-      id: "567",
+      _id: "567",
       name: "Tài chính ngân hàng",
     },
     {
-      id: "891",
+      _id: "65f2abc1934f2f23f4f2f111",
       name: "Luật",
     },
   ];
@@ -56,7 +44,7 @@ function CourseManage() {
   const [courseName, setCourseName] = useState("");
   const [courseCredits, setCourseCredits] = useState("");
   const [courseMajor, setCourseMajor] = useState("");
-  const [courses, setCourses] = useState(coursesData);
+  const [preRequireCourse, setPreRequireCourse] = useState("");
   const [majors, setMajors] = useState(majorsData);
   const [isEdit, setIsEdit] = useState(false);
   const courseIdRef = useRef(null) ;
@@ -65,10 +53,11 @@ function CourseManage() {
   const handleAddCourse = () => {
     if(courseId && courseName && courseCredits && courseMajor != "default" && courseMajor != "") {
       const newCourse = {
-        id: courseId,
+        courseId: courseId,
         name: courseName,
+        preRequireCourse: "",
         courseCredits: courseCredits,
-        major: courseMajor
+        majorId: courseMajor
       }
 
       setCourses([
@@ -87,17 +76,18 @@ function CourseManage() {
   const handleEditCourse = (index) => {
     setIsEdit(true)
     indexToEdit = index
-    setCourseId(courses[index].id)
+    setCourseId(courses[index].courseId)
     setCourseName(courses[index].name)
     setCourseCredits(courses[index].courseCredits)
-    setCourseMajor(courses[index].major)
+    setPreRequireCourse(courses[index].preRequireCourse)
+    setCourseMajor(courses[index].majorId)
     console.log(indexToEdit);
   }
   
   const confirmEdit = () => {
 
     if(courseId && courseName && courseCredits && courseMajor != "default" && courseMajor != "") {
-      courses[indexToEdit].id = courseId
+      courses[indexToEdit].courseId = courseId
       courses[indexToEdit].name = courseName
       courses[indexToEdit].courseCredits = courseCredits
       courses[indexToEdit].major = courseMajor
@@ -128,6 +118,7 @@ function CourseManage() {
     setIsEdit(false)
     indexToEdit = -1
   }
+
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -184,12 +175,27 @@ function CourseManage() {
           <select value={courseMajor} class="form-select" id="courseMajor" defaultValue={"default"} onChange={(e) => setCourseMajor(e.target.value)}>
             <option value="default">Chọn khoa</option>
             {majors.map((m) => (
-              <option key={m.id} value={m.id}>
+              <option key={m._id} value={m._id}>
                 {m.name}
               </option>
             ))}
           </select>
         </div>
+        <div className="control-item">
+          <label for="preRequireCourse" class="form-label">
+            Môn tiên quyết
+          </label>
+          <select value={preRequireCourse} class="form-select" id="preRequireCourse" defaultValue={"default"} onChange={(e) => setPreRequireCourse(e.target.value)}>
+            <option value="default" selected>Chọn môn tiên quyết</option>
+            <option value="no" >Không có môn tiên quyết</option>
+            {courses.map(c => (
+              <option key={c._id} value={c.courseId}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="control-item"></div>
         <div className="control-item d-flex gap-2">
           <button className="btn btn-primary" onClick={() => isEdit ? confirmEdit() : handleAddCourse()}>
             {!isEdit ? "Thêm môn học mới" : "Cập nhật môn học"}
@@ -207,18 +213,20 @@ function CourseManage() {
               <th scope="col">Tên môn học</th>
               <th scope="col">Số tín chỉ</th>
               <th scope="col">Khoa</th>
+              <th scope="col">Môn tiên quyết</th>
               <th scope="col"></th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {courses.map((c, index) => (
-              <tr key={c.id}>
+              <tr key={c._id}>
                 <th scope="row">{index + 1}</th>
-                <td>{c.id}</td>
+                <td>{c.courseId}</td>
                 <td>{c.name}</td>
                 <td>{c.courseCredits}</td>
-                <td>{majors.find(m => m.id == c.major).name}</td>
+                <td>{majors.find(m => m._id == c.majorId)?.name}</td>
+                <td>{courses.find(course => course.courseId == c.preRequireCourse)?.name || "Không"}</td>
                 <td>
                   <button
                     onClick={() => handleEditCourse(index)}
