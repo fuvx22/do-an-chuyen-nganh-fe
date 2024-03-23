@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useCallback, useEffect, useContext } from "react";
 import Navbar from "../components/Navbar";
+// import { useUser } from "../context/userContext";
+import { UserContext } from "../context/userContext";
 
 function Dashboard() {
   const numberOfTimes = 10; // Số lần hiển thị thẻ div
   const divs = [];
+
+  // const { fetchUserData, userData } = useUser();
+  const { userData } = useContext(UserContext);
 
   // Sử dụng vòng lặp for để tạo mảng divs chứa các thẻ div
   for (let i = 0; i < numberOfTimes; i++) {
@@ -23,7 +28,7 @@ function Dashboard() {
   return (
     <>
       <div className="col-12 col-sm-10 col-md-8 m-auto">
-        <Navbar />
+        <Navbar user={userData} />
         <div className="dashboard d-flex flex-column gap-3 ">
           <div className="announcement-section h-sx-100  mt-2 h-sx-auto">
             <h2>Thông báo</h2>
