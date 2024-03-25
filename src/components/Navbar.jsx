@@ -1,10 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Navbar() {
+function Navbar(props) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   const handleOpenSideMenu = () => {
     setIsSideMenuOpen(!isSideMenuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user-token");
+    navigate("/");
+  };
+  const handleCheckInfo = () => {
+    const token = JSON.parse(localStorage.getItem("user-token"));
+    if (token) {
+      navigate("/userBoard");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -20,16 +34,22 @@ function Navbar() {
         )}
       </button>
       <div className="navbar-user-info d-flex h-100 .align-items-*-center position-relative">
-        <span className="navbar-user-name mx-2 ">Võ Ngọc Phú</span>
+        <span className="navbar-user-name mx-2 ">
+          {props.user && props.user.name}
+        </span>
         <img
           className="navbar-user-img rounded-circle h-80"
           src="https://picsum.photos/200/200"
           alt=""
         />
         <ul className="dropdown-menu dropdown-menu-right overflow-hidden py-0 end-0 top-100">
-          <li className="dropdown-item">Thông tin cá nhân</li>
+          <li className="dropdown-item" onClick={handleCheckInfo}>
+            Thông tin cá nhân
+          </li>
           <div className="dropdown-divider m-0"></div>
-          <li className="dropdown-item">Đăng xuất</li>
+          <li className="dropdown-item" onClick={handleLogout}>
+            Đăng xuất
+          </li>
         </ul>
       </div>
       <div
