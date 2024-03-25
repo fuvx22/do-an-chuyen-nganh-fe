@@ -188,3 +188,12 @@ button {
   overflow: hidden;
   -webkit-line-clamp: 3;
 }
+
+.time-table-container {
+  height: 50vh;
+}
+
+.control-container div {
+  flex-basis: 500px;
+}
+

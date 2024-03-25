@@ -59,12 +59,12 @@ function Navbar(props) {
             : "side-menu col-12 col-sm-2"
         }
       >
-        {/* <button
-          className=" border-0 text-light position-absolute end-0 px-3 py-1"
+        <button
+          className=" border-0 text-light position-absolute end-0 px-3 py-1 d-sm-none"
           onClick={handleOpenSideMenu}
         >
           <i className="fa-solid fa-xmark"></i>
-        </button> */}
+        </button>
         <ul className="side-menu-option-list mt-5">
           <li className="side-menu-option">Thông tin cá nhân</li>
           <li className="side-menu-option">Đăng ký học phần</li>
