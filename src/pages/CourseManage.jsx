@@ -2,7 +2,7 @@ import { Children, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import { fetchCoursesAPI, createNewCourseAPI } from "../apis";
-import { courseErrorClassify } from "../utils/validator"
+import { courseErrorClassify } from "../utils/validator";
 
 let indexToEdit = -1;
 
@@ -14,7 +14,10 @@ function CourseManage() {
       try {
         const data = await fetchCoursesAPI();
         setCourses(data);
-      } catch (error) {}
+      } catch (error) {
+        toast.error("Không thể kết nối đến server!");
+        throw new Error("Cant connect to the server!");
+      }
     };
 
     fetchData();
@@ -72,11 +75,11 @@ function CourseManage() {
         toast.success("Thêm môn học thành công");
       } catch (error) {
         console.log(error);
-        toast.error(courseErrorClassify(error),{
+        toast.error(courseErrorClassify(error), {
           position: "top-center",
           theme: "colored",
-        })
-      } 
+        });
+      }
     } else {
       toast.error("Vui lòng không bỏ trống thông tin", {
         position: "top-center",
@@ -144,7 +147,7 @@ function CourseManage() {
 
       <div className="control-container my-3 d-flex flex-wrap gap-2">
         <div className="control-item">
-          <label for="courseId" class="form-label">
+          <label htmlFor="courseId" className="form-label">
             Mã môn học
           </label>
           <input
@@ -154,12 +157,12 @@ function CourseManage() {
               setCourseId(e.target.value);
             }}
             type="text"
-            class="form-control"
+            className="form-control"
             id="courseId"
           />
         </div>
         <div className="control-item">
-          <label for="courseName" class="form-label">
+          <label htmlFor="courseName" className="form-label">
             Tên môn học
           </label>
           <input
@@ -168,12 +171,12 @@ function CourseManage() {
               setCourseName(e.target.value);
             }}
             type="text"
-            class="form-control"
+            className="form-control"
             id="courseName"
           />
         </div>
         <div className="control-item">
-          <label for="courseCredit" class="form-label">
+          <label htmlFor="courseCredit" className="form-label">
             Số tín chỉ
           </label>
           <input
@@ -182,17 +185,17 @@ function CourseManage() {
               setCourseCredits(e.target.value);
             }}
             type="text"
-            class="form-control"
+            className="form-control"
             id="courseCredit"
           />
         </div>
         <div className="control-item">
-          <label for="courseMajor" class="form-label">
+          <label htmlFor="courseMajor" className="form-label">
             Khoa
           </label>
           <select
             value={courseMajor}
-            class="form-select"
+            className="form-select"
             id="courseMajor"
             defaultValue={"default"}
             onChange={(e) => setCourseMajor(e.target.value)}
@@ -206,12 +209,12 @@ function CourseManage() {
           </select>
         </div>
         <div className="control-item">
-          <label for="preRequireCourse" class="form-label">
+          <label htmlFor="preRequireCourse" className="form-label">
             Môn tiên quyết
           </label>
           <select
             value={preRequireCourse}
-            class="form-select"
+            className="form-select"
             id="preRequireCourse"
             defaultValue={"default"}
             onChange={(e) => setPreRequireCourse(e.target.value)}
@@ -245,7 +248,7 @@ function CourseManage() {
       </div>
 
       <div className="table-container">
-        <table class="table">
+        <table className="table">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -275,7 +278,7 @@ function CourseManage() {
                   <button
                     onClick={() => handleEditCourse(index)}
                     type="button"
-                    class="btn btn-primary btn-sm"
+                    className="btn btn-primary btn-sm"
                   >
                     Edit
                   </button>
@@ -284,7 +287,7 @@ function CourseManage() {
                   <button
                     onClick={() => handleDeleteCourse(index)}
                     type="button"
-                    class="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm"
                   >
                     Delete
                   </button>
