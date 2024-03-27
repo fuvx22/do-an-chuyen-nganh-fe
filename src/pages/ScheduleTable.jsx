@@ -36,20 +36,20 @@ function ScheduleTable() {
     <div className="col-12 col-sm-10 col-md-8 m-auto">
       <Navbar />
 
-    <div className="col-sm-6 mt-3">
-      <select
-        class="form-select form-select-sm"
-        aria-label=".form-select-sm example"
-        defaultValue={"2023-2024-2"}
-      >
-        <option value="2023-2024-2" > Học kì 2 năm học 2023-2024</option>
-        <option value="2023-2024-1">Học kì 1 năm học 2023-2024</option>
-        <option value="2022-2023-2">Học kì 2 năm học 2022-2023</option>
-        <option value="2022-2023-1">Học kì 1 năm học 2022-2023</option>
-        <option value="2021-2022-2">Học kì 2 năm học 2021-2022</option>
-        <option value="2021-2022-1">Học kì 1 năm học 2021-2022</option>
-      </select>
-    </div>
+      <div className="col-sm-6 mt-3">
+        <select
+          className="form-select form-select-sm"
+          aria-label=".form-select-sm example"
+          defaultValue={"2023-2024-2"}
+        >
+          <option value="2023-2024-2"> Học kì 2 năm học 2023-2024</option>
+          <option value="2023-2024-1">Học kì 1 năm học 2023-2024</option>
+          <option value="2022-2023-2">Học kì 2 năm học 2022-2023</option>
+          <option value="2022-2023-1">Học kì 1 năm học 2022-2023</option>
+          <option value="2021-2022-2">Học kì 2 năm học 2021-2022</option>
+          <option value="2021-2022-1">Học kì 1 năm học 2021-2022</option>
+        </select>
+      </div>
 
       <div className="time-table-container mt-3 overflow-auto">
         <TimeTable

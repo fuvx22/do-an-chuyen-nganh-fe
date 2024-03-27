@@ -66,7 +66,9 @@ function Navbar(props) {
           <i className="fa-solid fa-xmark"></i>
         </button>
         <ul className="side-menu-option-list mt-5">
-          <li className="side-menu-option">Thông tin cá nhân</li>
+          <li className="side-menu-option" onClick={handleCheckInfo}>
+            Thông tin cá nhân
+          </li>
           <li className="side-menu-option">Đăng ký học phần</li>
           <li className="side-menu-option">Xem thời khóa biểu tuần</li>
           <li className="side-menu-option">Xem thời khóa biểu học kì</li>

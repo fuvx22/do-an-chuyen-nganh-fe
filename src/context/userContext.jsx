@@ -2,7 +2,7 @@ import axios from "axios";
 import { createContext, useState, useContext, useEffect } from "react";
 
 import { API_ROOT } from "../utils/constants";
-
+import { fetchUserAPI } from "../apis";
 export const UserContext = createContext();
 // export const useUser = () => useContext(UserContext);
 
@@ -12,12 +12,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = JSON.parse(localStorage.getItem("user-token"));
-        const response = await axios.get(`${API_ROOT}/v1/user/userBoard`, {
-          headers: {
-            Authorization: `Bearer ${token.accessToken}`,
-          },
-        });
+        const response = await fetchUserAPI();
         setUserData(response.data);
         // console.log(response.data);
         setError(null);
