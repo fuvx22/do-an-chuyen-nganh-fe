@@ -1,14 +1,5 @@
 import axios from "axios";
 import { API_ROOT } from "../utils/constants";
-// const token = JSON.parse(localStorage.getItem("user-token"));
-// let REQ_HEADER = {};
-// if (token) {
-//   REQ_HEADER = {
-//     headers: {
-//       Authorization: `Bearer ${token.accessToken}`,
-//     },
-//   };
-// }
 
 export const fetchUserAPI = async (token) => {
   const response = axios.get(`${API_ROOT}/v1/user/userBoard`, {

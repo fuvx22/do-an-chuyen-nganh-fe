@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useContext } from "react";
 import Navbar from "../components/Navbar";
 // import { useUser } from "../context/userContext";
 import { UserContext } from "../context/userContext";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const numberOfTimes = 10; // Số lần hiển thị thẻ div
@@ -9,7 +10,7 @@ function Dashboard() {
 
   // const { fetchUserData, userData } = useUser();
   const { userData } = useContext(UserContext);
-
+  const navigate = useNavigate();
   // Sử dụng vòng lặp for để tạo mảng divs chứa các thẻ div
   for (let i = 0; i < numberOfTimes; i++) {
     divs.push(
@@ -24,7 +25,14 @@ function Dashboard() {
       </div>
     );
   }
-
+  const token = JSON.parse(localStorage.getItem("user-token"));
+  useEffect(() => {
+    if (token) {
+      return;
+    } else {
+      navigate("/");
+    }
+  }, []);
   return (
     <>
       <div className="col-12 col-sm-10 col-md-8 m-auto">
