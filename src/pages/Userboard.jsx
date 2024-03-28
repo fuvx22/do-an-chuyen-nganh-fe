@@ -1,10 +1,19 @@
 import React, { useContext, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { UserContext } from "../context/userContext";
+import { useNavigate } from "react-router-dom";
 
 function Userboard() {
   const { userData } = useContext(UserContext);
-
+  const navigate = useNavigate();
+  const token = JSON.parse(localStorage.getItem("user-token"));
+  useEffect(() => {
+    if (token) {
+      return;
+    } else {
+      navigate("/");
+    }
+  }, []);
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
       <Navbar user={userData} />

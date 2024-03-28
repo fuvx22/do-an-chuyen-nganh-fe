@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { UserContext } from "../context/userContext";
 function Navbar(props) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { role } = useContext(UserContext);
+  const token = JSON.parse(localStorage.getItem("user-token"));
   const handleOpenSideMenu = () => {
     setIsSideMenuOpen(!isSideMenuOpen);
   };
@@ -12,15 +14,20 @@ function Navbar(props) {
     localStorage.removeItem("user-token");
     navigate("/");
   };
+  const handleCourseManger = () => {
+    if (token) {
+      navigate("/course-manage");
+    } else {
+      navigate("/");
+    }
+  };
   const handleCheckInfo = () => {
-    const token = JSON.parse(localStorage.getItem("user-token"));
     if (token) {
       navigate("/userBoard");
     } else {
       navigate("/");
     }
   };
-
   return (
     <div className="my-navbar px-2">
       <button
@@ -66,6 +73,12 @@ function Navbar(props) {
           <i className="fa-solid fa-xmark"></i>
         </button>
         <ul className="side-menu-option-list mt-5">
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleCourseManger}>
+              Quản lí học phần
+            </li>
+          )}
+
           <li className="side-menu-option" onClick={handleCheckInfo}>
             Thông tin cá nhân
           </li>

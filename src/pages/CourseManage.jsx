@@ -1,27 +1,33 @@
 import { Children, useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
+import { fetchUserAPI } from "../apis";
 import { fetchCoursesAPI, createNewCourseAPI } from "../apis";
 import { courseErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
+import { useNavigate } from "react-router-dom";
 
 let indexToEdit = -1;
 
 function CourseManage() {
   const [courses, setCourses] = useState([]);
   const { userData } = useContext(UserContext);
+  const token = JSON.parse(localStorage.getItem("user-token"));
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = JSON.parse(localStorage.getItem("user-token"));
-        const data = await fetchCoursesAPI(token);
-        setCourses(data);
+        const response = await fetchUserAPI(token);
+        if (response.data.role === "admin") {
+          const data = await fetchCoursesAPI(token);
+          setCourses(data);
+        } else {
+          navigate("/dashboard");
+        }
       } catch (error) {
         toast.error("Không thể kết nối đến server!");
         throw new Error("Cant connect to the server!");
       }
     };
-
     fetchData();
   }, []);
 
@@ -43,7 +49,7 @@ function CourseManage() {
       name: "Luật",
     },
   ];
-
+  const navigate = useNavigate();
   const [courseId, setCourseId] = useState("");
   const [courseName, setCourseName] = useState("");
   const [courseCredits, setCourseCredits] = useState("");
@@ -52,7 +58,6 @@ function CourseManage() {
   const [majors, setMajors] = useState(majorsData);
   const [isEdit, setIsEdit] = useState(false);
   const courseIdRef = useRef(null);
-
   const handleAddCourse = async () => {
     if (
       courseId &&
@@ -142,7 +147,6 @@ function CourseManage() {
     setIsEdit(false);
     indexToEdit = -1;
   };
-
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
       <Navbar user={userData} />

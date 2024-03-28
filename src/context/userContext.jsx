@@ -7,17 +7,26 @@ export const UserContext = createContext();
 // export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
+  const [role, setRole] = useState(null);
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
   let token = JSON.parse(localStorage.getItem("user-token"));
   const login = async (tk) => {
-    token = tk;
-    await fetchUserData(token);
+    try {
+      token = tk;
+      const response = await fetchUserAPI(token);
+      setUserData(response.data);
+      setRole(response.data.role);
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
   };
   const fetchUserData = async (token) => {
     try {
       const response = await fetchUserAPI(token);
       setUserData(response.data);
+      setRole(response.data.role);
       // console.log(response.data);
       setError(null);
     } catch (error) {
@@ -34,7 +43,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userData, error, login }}>
+    <UserContext.Provider value={{ userData, error, login, role }}>
       {children}
     </UserContext.Provider>
   );

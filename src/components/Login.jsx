@@ -8,7 +8,7 @@ function Login() {
   const { login } = useContext(UserContext);
   const navigate = useNavigate();
   // const { fetchUserData, userData } = useUser();
-
+  const token = JSON.parse(localStorage.getItem("user-token"));
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [isShowPass, setIsShowPass] = useState(false);
@@ -34,7 +34,13 @@ function Login() {
       toast.error(error.response.data.error);
     }
   };
-
+  useEffect(() => {
+    if (!token) {
+      return;
+    } else {
+      navigate("/dashBoard");
+    }
+  }, []);
   return (
     <form action="">
       <div className="login-container col-xs-10 col-sm-6 col-lg-4">
