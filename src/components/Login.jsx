@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { loginAPI } from "../apis";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 
 function Login() {
+  const { login } = useContext(UserContext);
   const navigate = useNavigate();
   // const { fetchUserData, userData } = useUser();
 
@@ -19,6 +21,7 @@ function Login() {
       if (res.status == 200) {
         setIsLoading(false);
         localStorage.setItem("user-token", JSON.stringify(res.data));
+        login(res.data);
         toast.success("Đăng nhập thành công");
         navigate("/dashBoard");
       }

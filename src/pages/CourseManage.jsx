@@ -1,18 +1,20 @@
-import { Children, useEffect, useRef, useState } from "react";
+import { Children, useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import { fetchCoursesAPI, createNewCourseAPI } from "../apis";
 import { courseErrorClassify } from "../utils/validator";
+import { UserContext } from "../context/userContext";
 
 let indexToEdit = -1;
 
 function CourseManage() {
   const [courses, setCourses] = useState([]);
-
+  const { userData } = useContext(UserContext);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchCoursesAPI();
+        const token = JSON.parse(localStorage.getItem("user-token"));
+        const data = await fetchCoursesAPI(token);
         setCourses(data);
       } catch (error) {
         toast.error("Không thể kết nối đến server!");
@@ -143,7 +145,7 @@ function CourseManage() {
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
-      <Navbar />
+      <Navbar user={userData} />
 
       <div className="control-container my-3 d-flex flex-wrap gap-2">
         <div className="control-item">
