@@ -76,8 +76,7 @@ function CourseManage() {
           majorId: courseMajor,
         };
         const createdCourse = await createNewCourseAPI(newCourse);
-        console.log(createdCourse);
-        setCourses([...courses, newCourse]);
+        setCourses([...courses, createdCourse]);
         cancelActivity();
         toast.success("Thêm môn học thành công");
       } catch (error) {
