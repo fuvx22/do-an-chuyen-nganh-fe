@@ -1,8 +1,13 @@
-import { Children, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import { fetchUserAPI } from "../apis";
-import { fetchCoursesAPI, createNewCourseAPI } from "../apis";
+import {
+  fetchCoursesAPI,
+  createNewCourseAPI,
+  editCourseAPI,
+  deleteCourseAPI,
+} from "../apis";
 import { courseErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
@@ -75,13 +80,11 @@ function CourseManage() {
           courseCredits: courseCredits,
           majorId: courseMajor,
         };
-        const createdCourse = await createNewCourseAPI(newCourse);
-        console.log(createdCourse);
-        setCourses([...courses, newCourse]);
+        const createdCourse = await createNewCourseAPI(newCourse, token);
+        setCourses([...courses, createdCourse]);
         cancelActivity();
         toast.success("Thêm môn học thành công");
       } catch (error) {
-        console.log(error);
         toast.error(courseErrorClassify(error), {
           position: "top-center",
           theme: "colored",
@@ -106,7 +109,7 @@ function CourseManage() {
     setCourseMajor(courses[index].majorId);
   };
 
-  const confirmEdit = () => {
+  const confirmEdit = async () => {
     if (
       courseId &&
       courseName &&
@@ -118,11 +121,20 @@ function CourseManage() {
       courses[indexToEdit].courseId = courseId;
       courses[indexToEdit].name = courseName;
       courses[indexToEdit].courseCredits = courseCredits;
-      courses[indexToEdit].major = courseMajor;
+      courses[indexToEdit].preRequireCourse = preRequireCourse;
+      courses[indexToEdit].majorId = courseMajor;
 
-      setCourses([...courses]);
-
-      cancelActivity();
+      try {
+        await editCourseAPI(courses[indexToEdit]);
+        toast.success("Cập nhật môn học thành công");
+        cancelActivity();
+      } catch (error) {
+        toast.error(courseErrorClassify(error), {
+          position: "top-center",
+          theme: "colored",
+        });
+        throw Error(error);
+      }
     } else {
       toast.error("Vui lòng không bỏ trống thông tin", {
         position: "top-center",
@@ -132,10 +144,16 @@ function CourseManage() {
     }
   };
 
-  const handleDeleteCourse = (index) => {
-    const coursesToEdit = [...courses];
-    coursesToEdit.splice(index, 1);
-    setCourses(coursesToEdit);
+  const handleDeleteCourse = async (index) => {
+    try {
+      const coursesToEdit = [...courses];
+      await deleteCourseAPI(coursesToEdit[index]);
+      coursesToEdit.splice(index, 1);
+      setCourses(coursesToEdit);
+      toast.success("Xóa thành công", { position: "top-left" });
+    } catch (error) {
+      throw Error(error);
+    }
   };
 
   const cancelActivity = () => {
@@ -254,7 +272,7 @@ function CourseManage() {
       </div>
 
       <div className="table-container">
-        <table className="table">
+        <table className="table table-hover">
           <thead>
             <tr>
               <th scope="col">#</th>
