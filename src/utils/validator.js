@@ -1,6 +1,6 @@
 export const courseErrorClassify = (error) => {
     const message = error.response.data.error
-    let errorMessage = "Nhập sai định dạng"
+    let errorMessage = message;
     if (message.includes("MongoServerError")) {
       errorMessage = "Mã môn học đã tồn tại"
     }

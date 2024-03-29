@@ -23,7 +23,22 @@ export const fetchCoursesAPI = async (token) => {
   return response.data;
 };
 
-export const createNewCourseAPI = async (data) => {
-  const response = await axios.post(`${API_ROOT}/v1/course/`, data);
+export const createNewCourseAPI = async (data, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/course/`, data,{
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`
+    }
+  }
+  );
   return response.data;
 };
+
+export const editCourseAPI = async (data) => {
+  const response = await axios.put(`${API_ROOT}/v1/course/edit`, data);
+  return response.data;
+}
+
+export const deleteCourseAPI = async (data) => {
+  const response = await axios.delete(`${API_ROOT}/v1/course/delete`, {data: data})
+  return response.data;
+}
