@@ -5,6 +5,7 @@ import React from "react";
 import Userboard from "./pages/Userboard";
 import ScheduleTable from "./pages/ScheduleTable";
 import CourseManage from "./pages/CourseManage";
+import MajorManage from "./pages/MajorManage";
 import { UserProvider } from "./context/userContext";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/userboard" element={<Userboard />} />
           <Route path="/schedule" element={<ScheduleTable />} />
           <Route path="/course-manage" element={<CourseManage />} />
+          <Route path="/major-manage" element={<MajorManage />} />
         </Routes>
       </Router>
     </UserProvider>
