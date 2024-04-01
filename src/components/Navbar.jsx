@@ -28,6 +28,13 @@ function Navbar(props) {
       navigate("/");
     }
   };
+  const handleMajorManager = () => {
+    if(token) {
+      navigate("/major-manage");
+    } else {
+      navigate("/");
+    }
+  };
   return (
     <div className="my-navbar px-2">
       <button
@@ -78,7 +85,11 @@ function Navbar(props) {
               Quản lí học phần
             </li>
           )}
-
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleMajorManager}>
+              Quản lí khoa
+            </li>
+          )}
           <li className="side-menu-option" onClick={handleCheckInfo}>
             Thông tin cá nhân
           </li>

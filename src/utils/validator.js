@@ -12,3 +12,16 @@ export const courseErrorClassify = (error) => {
     }
     return errorMessage
 }
+
+export const majorErrorClassify = (error) => {
+  const message = error.response.data.error
+  let errorMessage = message;
+  if (message.includes("MongoServerError")) {
+    errorMessage = "Mã khoa đã tồn tại"
+  }
+  else if (message.includes("majorId")) {
+    errorMessage = "Nhập sai định dạng mã khoa"
+  }
+  
+  return errorMessage
+}

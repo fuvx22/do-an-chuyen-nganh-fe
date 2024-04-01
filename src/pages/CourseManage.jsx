@@ -7,6 +7,7 @@ import {
   createNewCourseAPI,
   editCourseAPI,
   deleteCourseAPI,
+  fetchMajorsAPI
 } from "../apis";
 import { courseErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
@@ -16,6 +17,7 @@ let indexToEdit = -1;
 
 function CourseManage() {
   const [courses, setCourses] = useState([]);
+  const [majors, setMajors] = useState([]);
   const { userData } = useContext(UserContext);
   const token = JSON.parse(localStorage.getItem("user-token"));
   useEffect(() => {
@@ -24,7 +26,9 @@ function CourseManage() {
         const response = await fetchUserAPI(token);
         if (response.data.role === "admin") {
           const data = await fetchCoursesAPI(token);
+          const majorData = await fetchMajorsAPI(token);
           setCourses(data);
+          setMajors(majorData);
         } else {
           navigate("/dashboard");
         }
@@ -36,31 +40,30 @@ function CourseManage() {
     fetchData();
   }, []);
 
-  let majorsData = [
-    {
-      _id: "65f2abc1934f2f23f4f2f534",
-      name: "Công nghệ thông tin",
-    },
-    {
-      _id: "65f2abc1934f2f23f445f534",
-      name: "Marketing",
-    },
-    {
-      _id: "65f2abc1934f2f99f4f2f534",
-      name: "Tài chính ngân hàng",
-    },
-    {
-      _id: "65f2abc1934f2f23f4f2f111",
-      name: "Luật",
-    },
-  ];
+  // let majorsData = [
+  //   {
+  //     _id: "65f2abc1934f2f23f4f2f534",
+  //     name: "Công nghệ thông tin",
+  //   },
+  //   {
+  //     _id: "65f2abc1934f2f23f445f534",
+  //     name: "Marketing",
+  //   },
+  //   {
+  //     _id: "65f2abc1934f2f99f4f2f534",
+  //     name: "Tài chính ngân hàng",
+  //   },
+  //   {
+  //     _id: "65f2abc1934f2f23f4f2f111",
+  //     name: "Luật",
+  //   },
+  // ];
   const navigate = useNavigate();
   const [courseId, setCourseId] = useState("");
   const [courseName, setCourseName] = useState("");
   const [courseCredits, setCourseCredits] = useState("");
   const [courseMajor, setCourseMajor] = useState("");
   const [preRequireCourse, setPreRequireCourse] = useState("");
-  const [majors, setMajors] = useState(majorsData);
   const [isEdit, setIsEdit] = useState(false);
   const courseIdRef = useRef(null);
   const handleAddCourse = async () => {

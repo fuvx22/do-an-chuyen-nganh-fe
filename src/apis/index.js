@@ -42,3 +42,34 @@ export const deleteCourseAPI = async (data) => {
   const response = await axios.delete(`${API_ROOT}/v1/course/delete`, {data: data})
   return response.data;
 }
+
+
+// Major
+export const fetchMajorsAPI = async (token) => {
+  const response = await axios.get(`${API_ROOT}/v1/major/`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const createNewMajorAPI = async (data, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/major/`, data,{
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`
+    }
+  }
+  );
+  return response.data;
+};
+
+export const editMajorAPI = async (data) => {
+  const response = await axios.put(`${API_ROOT}/v1/major/edit`, data);
+  return response.data;
+}
+
+export const deleteMajorAPI = async (data) => {
+  const response = await axios.delete(`${API_ROOT}/v1/major/delete`, {data: data})
+  return response.data;
+}
