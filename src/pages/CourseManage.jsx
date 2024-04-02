@@ -7,7 +7,7 @@ import {
   createNewCourseAPI,
   editCourseAPI,
   deleteCourseAPI,
-  fetchMajorsAPI
+  fetchMajorsAPI,
 } from "../apis";
 import { courseErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
@@ -307,7 +307,7 @@ function CourseManage() {
                     type="button"
                     className="btn btn-primary btn-sm"
                   >
-                    Edit
+                    <i className="fas fa-edit"></i>
                   </button>
                 </td>
                 <td>
@@ -316,7 +316,7 @@ function CourseManage() {
                     type="button"
                     className="btn btn-danger btn-sm"
                   >
-                    Delete
+                    <i className="fas fa-trash"></i>
                   </button>
                 </td>
               </tr>

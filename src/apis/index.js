@@ -24,25 +24,25 @@ export const fetchCoursesAPI = async (token) => {
 };
 
 export const createNewCourseAPI = async (data, token) => {
-  const response = await axios.post(`${API_ROOT}/v1/course/`, data,{
+  const response = await axios.post(`${API_ROOT}/v1/course/`, data, {
     headers: {
-      Authorization: `Bearer ${token.accessToken}`
-    }
-  }
-  );
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
   return response.data;
 };
 
 export const editCourseAPI = async (data) => {
   const response = await axios.put(`${API_ROOT}/v1/course/edit`, data);
   return response.data;
-}
+};
 
 export const deleteCourseAPI = async (data) => {
-  const response = await axios.delete(`${API_ROOT}/v1/course/delete`, {data: data})
+  const response = await axios.delete(`${API_ROOT}/v1/course/delete`, {
+    data: data,
+  });
   return response.data;
-}
-
+};
 
 // Major
 export const fetchMajorsAPI = async (token) => {
@@ -55,21 +55,65 @@ export const fetchMajorsAPI = async (token) => {
 };
 
 export const createNewMajorAPI = async (data, token) => {
-  const response = await axios.post(`${API_ROOT}/v1/major/`, data,{
+  const response = await axios.post(`${API_ROOT}/v1/major/`, data, {
     headers: {
-      Authorization: `Bearer ${token.accessToken}`
-    }
-  }
-  );
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
   return response.data;
 };
 
 export const editMajorAPI = async (data) => {
   const response = await axios.put(`${API_ROOT}/v1/major/edit`, data);
   return response.data;
-}
+};
 
 export const deleteMajorAPI = async (data) => {
-  const response = await axios.delete(`${API_ROOT}/v1/major/delete`, {data: data})
+  const response = await axios.delete(`${API_ROOT}/v1/major/delete`, {
+    data: data,
+  });
   return response.data;
-}
+};
+export const getInstructor = async (token) => {
+  const response = await axios.get(`${API_ROOT}/v1/instructor/`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+export const addInstructor = async (newInstructor, token) => {
+  const response = await axios.post(
+    `${API_ROOT}/v1/instructor/`,
+    newInstructor,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
+  return response.data;
+};
+export const editInstructor = async (selectedInstructor, token) => {
+  const response = await axios.post(
+    `${API_ROOT}/v1/instructor/edit`,
+    selectedInstructor,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
+  return response.data;
+};
+export const deleteInstructor = async (id, tọken) => {
+  const response = await axios.delete(
+    `${API_ROOT}/v1/instructor/delete/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${tọken.accessToken}`,
+      },
+    }
+  );
+  return response;
+};

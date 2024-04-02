@@ -29,8 +29,15 @@ function Navbar(props) {
     }
   };
   const handleMajorManager = () => {
-    if(token) {
+    if (token) {
       navigate("/major-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleInstructorManager = () => {
+    if (token) {
+      navigate("/instructor-manage");
     } else {
       navigate("/");
     }
@@ -80,6 +87,11 @@ function Navbar(props) {
           <i className="fa-solid fa-xmark"></i>
         </button>
         <ul className="side-menu-option-list mt-5">
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleInstructorManager}>
+              Quản lí Giảng Viên
+            </li>
+          )}
           {role === "admin" && (
             <li className="side-menu-option" onClick={handleCourseManger}>
               Quản lí học phần
