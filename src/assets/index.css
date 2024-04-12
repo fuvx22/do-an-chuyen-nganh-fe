@@ -197,3 +197,7 @@ button {
   flex-basis: 400px;
 }
 
+.notify-editor {
+  height: 250px;
+}
+

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
-import { fetchUserAPI } from "../apis";
 import {
+  fetchUserAPI,
   fetchCoursesAPI,
   createNewCourseAPI,
   editCourseAPI,
@@ -40,24 +40,6 @@ function CourseManage() {
     fetchData();
   }, []);
 
-  // let majorsData = [
-  //   {
-  //     _id: "65f2abc1934f2f23f4f2f534",
-  //     name: "Công nghệ thông tin",
-  //   },
-  //   {
-  //     _id: "65f2abc1934f2f23f445f534",
-  //     name: "Marketing",
-  //   },
-  //   {
-  //     _id: "65f2abc1934f2f99f4f2f534",
-  //     name: "Tài chính ngân hàng",
-  //   },
-  //   {
-  //     _id: "65f2abc1934f2f23f4f2f111",
-  //     name: "Luật",
-  //   },
-  // ];
   const navigate = useNavigate();
   const [courseId, setCourseId] = useState("");
   const [courseName, setCourseName] = useState("");
@@ -171,7 +153,7 @@ function CourseManage() {
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
       <Navbar user={userData} />
-
+      <h3>Quản lý môn học</h3>
       <div className="control-container my-3 d-flex flex-wrap gap-2">
         <div className="control-item">
           <label htmlFor="courseId" className="form-label">
