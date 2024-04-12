@@ -15,21 +15,34 @@ import { modalStyles } from "../utils/constants";
 import { EditorState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
+import { convertToRaw } from 'draft-js';
 
 function NotifyManage() {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
-  const onEditorStateChange = (newEditorState) => {
-    setEditorState(newEditorState);
-  };
   const [notifies, setNotifies] = useState([]);
-  const [current, setCurrent] = useState({});
+  const [current, setCurrent] = useState({
+    title: "",
+    content: "",
+    authorId: "",
+  });
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   const token = JSON.parse(localStorage.getItem("user-token"));
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState();
+
+  const removeState = () => {
+    setEditorState(EditorState.createEmpty());
+    setCurrent({
+      ...current,
+      title: "",
+      content: ""
+    })
+  }
 
   function closeModal() {
     setIsOpen(false);
@@ -43,6 +56,38 @@ function NotifyManage() {
     openModal();
     setStatus("Thêm mới");
   };
+
+  const handleInputChange = (e) => {
+    setCurrent({
+      ...current,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onEditorStateChange = (newEditorState) => {
+    setEditorState(newEditorState);
+    setCurrent({
+      ...current,
+      content: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+    });
+  };
+
+  const handleSaveBtnClick = async () => {
+    current.authorId = userData._id;
+    console.log(current);
+    try {
+      if (status === "Thêm mới") {
+        const newNotify = await createNewNotifyAPI(current, token);
+        setNotifies([...notifies, newNotify]);
+        toast.success("Thêm môn học thành công");
+      }
+      closeModal();
+      removeState();
+    } catch (error) {
+      toast.error("Thông tin không hợp lệ!")
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
     if (!token) {
@@ -67,24 +112,24 @@ function NotifyManage() {
     }
   }, [userData]);
 
-  const uploadImageCallBack = (file) => {
+  function uploadImageCallBack(file) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://api.imgur.com/3/image");
-      xhr.setRequestHeader("Authorization", "Client-ID ec6bb9fbdb21e25");
+      xhr.setRequestHeader("Authorization", 'Client-ID "ec6bb9fbdb21e25"');
       const data = new FormData();
       data.append("image", file);
       xhr.send(data);
       xhr.addEventListener("load", () => {
-        const res = JSON.parse(xhr.responseText);
-        resolve(res);
+        const response = JSON.parse(xhr.responseText);
+        resolve(response);
       });
       xhr.addEventListener("error", () => {
-        const err = JSON.parse(xhr.responseText);
-        reject(err);
+        const error = JSON.parse(xhr.responseText);
+        reject(error);
       });
     });
-  };
+  }
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -117,7 +162,7 @@ function NotifyManage() {
                 <td>{n?.authorId}</td>
                 <td>
                   <button
-                    onClick={() => {}}
+                    onClick={() => { handleEditBtnClick(n?._id) }}
                     type="button"
                     className="btn btn-primary btn-sm"
                   >
@@ -126,7 +171,7 @@ function NotifyManage() {
                 </td>
                 <td>
                   <button
-                    onClick={() => {}}
+                    onClick={() => { handleDeleteBtnClick(n?._id) }}
                     type="button"
                     className="btn btn-danger btn-sm"
                   >
@@ -147,25 +192,33 @@ function NotifyManage() {
         <div className="modal-header">
           <h4 className="modal-title">{status} thông báo</h4>
         </div>
-        <div className="my-3">
+        <div className="mb-2">
           <label htmlFor="title" className="form-label">
             Tiêu đề thông báo
           </label>
-          <input type="text" className="form-control" id="title" />
+          <input
+            type="text"
+            className="form-control"
+            id="title"
+            name="title"
+            onChange={handleInputChange}
+            value={current?.title}
+          />
         </div>
-        <div className="">
+        <div className="mb-2" style={{ height: "75%" }}>
           <label htmlFor="content" className="form-label">
-            Tiêu đề thông báo
+            Nội dung thông báo
           </label>
           <Editor
-            wrapperClassName="mb-3"
+            id="content"
+            wrapperClassName="mb-3 editor-wrapper"
             editorClassName="mt-3 form-control notify-editor"
             editorState={editorState}
             onEditorStateChange={onEditorStateChange}
             toolbar={{
               inline: { inDropdown: true },
               list: { inDropdown: true },
-              textAlign: { inDropdown: true },
+              textAlign: { inDropdown: false },
               link: { inDropdown: true },
               history: { inDropdown: true },
               image: {
@@ -174,6 +227,10 @@ function NotifyManage() {
               },
             }}
           />
+        </div>
+        <div className="d-flex justify-content-end gap-2">
+          <button className="btn btn-danger px-5" onClick={closeModal}>Hủy</button>
+          <button className="btn btn-primary px-5" onClick={handleSaveBtnClick}>Lưu</button>
         </div>
       </Modal>
     </div>
