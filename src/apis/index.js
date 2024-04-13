@@ -138,6 +138,11 @@ export const createNewNotifyAPI = async (data, token) => {
   return response.data;
 };
 
+export const findOneNotifyAPI = async (id) => {
+  const response = await axios.get(`${API_ROOT}/v1/notify/find`, {params: { id: id }});
+  return response.data;
+};
+
 export const editNotifyAPI = async (data) => {
   const response = await axios.put(`${API_ROOT}/v1/notify/edit`, data);
   return response.data;

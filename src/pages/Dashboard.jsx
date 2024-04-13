@@ -1,41 +1,48 @@
-import React, { useCallback, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Navbar from "../components/Navbar";
 // import { useUser } from "../context/userContext";
 import { UserContext } from "../context/userContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchNotifiesAPI } from "../apis";
+import { convert } from "html-to-text";
 
 function Dashboard() {
-  const numberOfTimes = 10; // Số lần hiển thị thẻ div
-  const divs = [];
 
   // const { fetchUserData, userData } = useUser();
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
-  // Sử dụng vòng lặp for để tạo mảng divs chứa các thẻ div
-  for (let i = 0; i < numberOfTimes; i++) {
-    divs.push(
-      <div className="announce-item rounded-2" key={i}>
-        <h4 className="announce-item-title">Thông báo đăng kí môn</h4>
-        <p className="anounce-content truncate">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam fugit
-          pariatur incidunt. Amet, sunt. Reprehenderit sit, dolorem distinctio
-          culpa, quod non omnis placeat iste quos nulla molestias est voluptatum
-          odio! Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam 
-          possimus, sunt placeat eius ipsum perferendis enim laudantium. Totam fugiat 
-          dolore possimus quidem! Deleniti reiciendis maxime obcaecati accusantium officia 
-          voluptate. Soluta!
-        </p>
-      </div>
-    );
-  }
+  const [notifies, setNotifies] = useState([]);
   const token = JSON.parse(localStorage.getItem("user-token"));
   useEffect(() => {
-    if (token) {
-      return;
-    } else {
+    if (!token) {
       navigate("/");
-    }
-  }, []);
+      return;
+    } 
+    const fetchData = async () => {
+      try {
+          const notifies = await fetchNotifiesAPI(token);
+          setNotifies(notifies);
+        } catch (error) {
+          toast.error("Không thể kết nối đến server");
+        }
+      };
+      
+      fetchData();
+    }, []);
+
+  // Sử dụng vòng lặp for để tạo mảng divs chứa các thẻ div
+  const divs = [];
+  for (let i = 0; i < notifies.length; i++) { 
+    divs.push(
+        <div className="announce-item rounded-2" key={i} onClick={() => navigate("/notify/"+notifies[i]?._id)}>
+          <h4 className="announce-item-title">{notifies[i]?.title}</h4>
+          <p className="anounce-content truncate">
+            { convert(notifies[i]?.content) }
+          </p>
+        </div>
+    );
+  }
+
   return (
     <>
       <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -43,13 +50,13 @@ function Dashboard() {
         <div className="dashboard d-flex flex-column gap-3 ">
           <div className="announcement-section h-sx-100  mt-2 h-sx-auto">
             <h2>Thông báo</h2>
-            <div className="announce-container d-sm-flex gap-2 flex-wrap align-item-center justify-content-center border-start border-2">
+            <div className="announce-container d-sm-flex gap-3 flex-wrap align-item-center justify-content-start border-start border-2 ps-2 my-3">
               {divs}
             </div>
           </div>
           <div className="guild-section">
             <h2>Hướng dẫn</h2>
-            <div className="guild-container border-start border-2 ps-2">
+            <div className="guild-container border-start border-2 ps-2 my-3">
               <table className="table table-hover">
                 <tbody>
                   <tr>

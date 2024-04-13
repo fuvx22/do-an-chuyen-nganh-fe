@@ -2,7 +2,7 @@
   --primary-color: hsl(202, 92%, 33%);
   --primary-color-dark: hsl(202, 92%, 23%);
   --secondary-color: #2cfed5;
-  --gray-text: hsl(0, 0%, 40%);
+  --gray-text: hsl(0, 0%, 30%);
 }
 
 * {
@@ -186,7 +186,7 @@ button {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
 }
 
 .time-table-container {
