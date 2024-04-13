@@ -7,6 +7,7 @@ import ScheduleTable from "./pages/ScheduleTable";
 import CourseManage from "./pages/CourseManage";
 import MajorManage from "./pages/MajorManage";
 import InstructorManage from "./pages/InstructorManage";
+import NotifyManage from "./pages/NotifyManage";
 import { UserProvider } from "./context/userContext";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/course-manage" element={<CourseManage />} />
           <Route path="/major-manage" element={<MajorManage />} />
           <Route path="/instructor-manage" element={<InstructorManage />} />
+          <Route path="/notify-manage" element={<NotifyManage />} />
         </Routes>
       </Router>
     </UserProvider>

@@ -94,7 +94,7 @@ function Navbar(props) {
           )}
           {role === "admin" && (
             <li className="side-menu-option" onClick={handleCourseManger}>
-              Quản lí học phần
+              Quản lí môn học
             </li>
           )}
           {role === "admin" && (

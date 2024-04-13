@@ -20,7 +20,10 @@ function Dashboard() {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam fugit
           pariatur incidunt. Amet, sunt. Reprehenderit sit, dolorem distinctio
           culpa, quod non omnis placeat iste quos nulla molestias est voluptatum
-          odio!
+          odio! Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam 
+          possimus, sunt placeat eius ipsum perferendis enim laudantium. Totam fugiat 
+          dolore possimus quidem! Deleniti reiciendis maxime obcaecati accusantium officia 
+          voluptate. Soluta!
         </p>
       </div>
     );

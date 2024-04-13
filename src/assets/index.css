@@ -159,7 +159,7 @@ button {
 
 .announcement-section,
 .guild.section {
-  max-height: 320px;
+  max-height: 50vh;
   overflow: auto;
   padding-bottom: 5px;
 }
@@ -195,5 +195,13 @@ button {
 
 .control-container div {
   flex-basis: 400px;
+}
+
+.editor-wrapper {
+  height: 90%;
+}
+
+.notify-editor {  
+  height: 85%;
 }
 

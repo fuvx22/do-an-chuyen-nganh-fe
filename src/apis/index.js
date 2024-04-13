@@ -117,3 +117,35 @@ export const deleteInstructor = async (id, tọken) => {
   );
   return response;
 };
+
+//Notify
+
+export const fetchNotifiesAPI = async (token) => {
+  const response = await axios.get(`${API_ROOT}/v1/notify/`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const createNewNotifyAPI = async (data, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/notify/`, data, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const editNotifyAPI = async (data) => {
+  const response = await axios.put(`${API_ROOT}/v1/notify/edit`, data);
+  return response.data;
+};
+
+export const deleteNotifyAPI = async (data) => {
+  const response = await axios.delete(`${API_ROOT}/v1/notify/delete`, {
+    data: data,
+  });
+  return response.data;
+};
