@@ -6,7 +6,6 @@ import {
   createNewNotifyAPI,
   editNotifyAPI,
   deleteNotifyAPI,
-  fetchMajorsAPI,
 } from "../apis";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";

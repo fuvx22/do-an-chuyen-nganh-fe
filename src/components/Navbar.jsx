@@ -42,6 +42,13 @@ function Navbar(props) {
       navigate("/");
     }
   };
+  const handleNotifyManager = () => {
+    if (token) {
+      navigate("/notify-manage");
+    } else {
+      navigate("/");
+    }
+  };
   return (
     <div className="my-navbar px-2">
       <button
@@ -87,6 +94,7 @@ function Navbar(props) {
           <i className="fa-solid fa-xmark"></i>
         </button>
         <ul className="side-menu-option-list mt-5">
+          <li className="side-menu-option" onClick={() => navigate("/dashBoard")}>Trang chủ</li>
           {role === "admin" && (
             <li className="side-menu-option" onClick={handleInstructorManager}>
               Quản lí Giảng Viên
@@ -100,6 +108,11 @@ function Navbar(props) {
           {role === "admin" && (
             <li className="side-menu-option" onClick={handleMajorManager}>
               Quản lí khoa
+            </li>
+          )}
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleNotifyManager}>
+              Quản lí thông báo
             </li>
           )}
           <li className="side-menu-option" onClick={handleCheckInfo}>
