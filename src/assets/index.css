@@ -122,7 +122,7 @@ button {
 .side-menu {
   height: 100vh;
   background-color: var(--primary-color);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   transform: translateX(-100%);
@@ -205,3 +205,11 @@ button {
   height: 85%;
 }
 
+.theader {
+  --bs-table-bg: var(--primary-color) !important;
+  --bs-table-color: #ffffff;
+}
+
+.footer {
+  background-color: var(--primary-color);
+}
