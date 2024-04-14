@@ -9,6 +9,8 @@ import MajorManage from "./pages/MajorManage";
 import InstructorManage from "./pages/InstructorManage";
 import NotifyManage from "./pages/NotifyManage";
 import Notify from "./pages/Notify";
+import CourseRegistration from "./pages/CoureRegistration";
+import Footer from "./components/Footer";
 import { UserProvider } from "./context/userContext";
 
 function App() {
@@ -25,8 +27,10 @@ function App() {
           <Route path="/instructor-manage" element={<InstructorManage />} />
           <Route path="/notify-manage" element={<NotifyManage />} />
           <Route path="/notify/:id" element={<Notify />} />
+          <Route path="/course-registration" element={<CourseRegistration />} />
         </Routes>
       </Router>
+      <Footer></Footer>
     </UserProvider>
   );
 }
