@@ -63,6 +63,9 @@ export const createNewMajorAPI = async (data, token) => {
   return response.data;
 };
 
+// Semester
+
+
 export const editMajorAPI = async (data) => {
   const response = await axios.put(`${API_ROOT}/v1/major/edit`, data);
   return response.data;

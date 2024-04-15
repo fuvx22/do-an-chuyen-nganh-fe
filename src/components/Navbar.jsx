@@ -42,6 +42,13 @@ function Navbar(props) {
       navigate("/");
     }
   };
+  const handleSemesterManager = () => {
+    if (token) {
+      navigate("/semester-manage");
+    } else {
+      navigate("/");
+    }
+  };
   const handleNotifyManager = () => {
     if (token) {
       navigate("/notify-manage");
@@ -108,6 +115,11 @@ function Navbar(props) {
           {role === "admin" && (
             <li className="side-menu-option" onClick={handleMajorManager}>
               Quản lí khoa
+            </li>
+          )}
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleSemesterManager}>
+              Quản lí học kỳ
             </li>
           )}
           {role === "admin" && (
