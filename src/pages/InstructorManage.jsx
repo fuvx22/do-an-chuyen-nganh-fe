@@ -37,6 +37,10 @@ const InstructorManage = () => {
   };
 
   useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
     const fetchData = async () => {
       try {
         const response = await fetchUserAPI(token);
