@@ -157,6 +157,10 @@ button {
   }
 }
 
+.dashboard {
+  min-height: 100vh;
+}
+
 .announcement-section,
 .guild.section {
   max-height: 50vh;
