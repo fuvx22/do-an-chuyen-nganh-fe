@@ -25,3 +25,16 @@ export const majorErrorClassify = (error) => {
   
   return errorMessage
 }
+
+export const semesterErrorClassify = (error) => {
+  const message = error.response.data.error
+  let errorMessage = message;
+  if (message.includes("MongoServerError")) {
+    errorMessage = "Mã học kỳ đã tồn tại"
+  }
+  else if (message.includes("semesterId")) {
+    errorMessage = "Nhập sai định dạng mã học kỳ"
+  }
+  
+  return errorMessage
+}

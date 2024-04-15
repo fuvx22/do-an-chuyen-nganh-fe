@@ -39,7 +39,6 @@ function SemesterManage() {
   
 
   const navigate = useNavigate();
-  const [semesterId, setSemesterId] = useState("");
   const [semesterName, setSemesterName] = useState("");
   const [startSemesterDate, setStartSemesterDate] = useState("");
   const [endSemesterDate, setEndSemesterDate] = useState("");
@@ -48,10 +47,9 @@ function SemesterManage() {
   const semesterIdRef = useRef(null);
 
   const handleAddSemester = async () => {
-    if (semesterId && semesterName) {
+    if (semesterName) {
       try {
         const newSemester = {
-          semesterId: semesterId,
           semesterName: semesterName,
           startSemesterDate: startSemesterDate,
           endSemesterDate: endSemesterDate,
@@ -79,15 +77,14 @@ function SemesterManage() {
   const handleEditSemester = (index) => {
     setIsEdit(true);
     indexToEdit = index;
-    setSemesterId(semesters[index].semesterId);
     setSemesterName(semesters[index].semesterName);
     setStartSemesterDate(semesters[index].startSemesterDate);
     setEndSemesterDate(semesters[index].endSemesterDate);
   };
 
   const confirmEdit = async () => {
-    if (semesterId && semesterName && startSemesterDate && endSemesterDate) {
-      semesters[indexToEdit].semesterId = semesterId;
+    if (semesterName && startSemesterDate && endSemesterDate) {
+      
       semesters[indexToEdit].semesterName = semesterName;
       semesters[indexToEdit].startSemesterDate = startSemesterDate;
       semesters[indexToEdit].endSemesterDate = endSemesterDate;
@@ -127,7 +124,7 @@ function SemesterManage() {
   };
 
   const cancelActivity = () => {
-    setSemesterId("");
+    
     setSemesterName("");
     setStartSemesterDate("");
     setEndSemesterDate("");
@@ -142,21 +139,6 @@ function SemesterManage() {
       <Navbar user={userData} />
 
       <div className="control-container my-3 d-flex flex-wrap gap-2">
-        <div className="control-item">
-          <label htmlFor="majorId" className="form-label">
-            Mã học kỳ
-          </label>
-          <input
-            ref={semesterIdRef}
-            value={semesterId}
-            onChange={(e) => {
-              setSemesterId(e.target.value);
-            }}
-            type="text"
-            className="form-control"
-            id="semesterId" 
-          />
-        </div>
         <div className="control-item">
           <label htmlFor="majorName" className="form-label">
             Tên học kỳ
@@ -222,7 +204,6 @@ function SemesterManage() {
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Mã học kỳ</th>
               <th scope="col">Tên học kỳ</th>
               <th scope="col">Ngày bắt đầu</th>
               <th scope="col">Ngày kết thúc</th>
@@ -234,7 +215,6 @@ function SemesterManage() {
             {semesters.map((c, index) => (
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
-                <td>{c.semesterId}</td>
                 <td>{c.semesterName}</td>
                 <td>{new Date(c.startSemesterDate).toLocaleDateString("en-GB")}</td>
                 <td>{new Date(c.endSemesterDate).toLocaleDateString("en-GB")}</td>
