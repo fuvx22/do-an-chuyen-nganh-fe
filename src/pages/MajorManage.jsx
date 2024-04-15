@@ -19,6 +19,10 @@ function MajorManage() {
   const { userData } = useContext(UserContext);
   const token = JSON.parse(localStorage.getItem("user-token"));
   useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
     const fetchData = async () => {
       try {
         const respone = await fetchUserAPI(token);

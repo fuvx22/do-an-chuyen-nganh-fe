@@ -3,6 +3,7 @@ import { loginAPI } from "../apis";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import * as logo from "../assets/SGU-LOGO.png";
 
 function Login() {
   const { login } = useContext(UserContext);
@@ -43,7 +44,17 @@ function Login() {
   }, []);
   return (
     <form action="">
-      <div className="login-container col-xs-10 col-sm-6 col-lg-4">
+      <div
+        className="login-container col-xs-10 col-sm-6 col-lg-4"
+        style={{ minHeight: "80vh" }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <img
+            src={logo.default}
+            alt=""
+            style={{ objectFit: "cover", height: "200px" }}
+          />
+        </div>
         <div className="title">Đăng Nhập</div>
         <div className="text">Student ID</div>
         <input

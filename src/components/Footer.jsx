@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 function Footer() {
   return (
@@ -8,7 +8,7 @@ function Footer() {
           <div className="col-md-6">
             <h5>Thông tin liên hệ</h5>
             <p>Đại học Sài Gòn</p>
-            <p>123 Đường ABC, Quận XYZ, TP. HCM</p>
+            <p>273 An Dương Vương, Phường 3, Quận 5, TP. HCM</p>
             <p>Email: info@saigonuniversity.edu.vn</p>
             <p>Điện thoại: (84) 123 456 789</p>
           </div>

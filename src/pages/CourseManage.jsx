@@ -21,6 +21,10 @@ function CourseManage() {
   const { userData } = useContext(UserContext);
   const token = JSON.parse(localStorage.getItem("user-token"));
   useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
     const fetchData = async () => {
       try {
         const response = await fetchUserAPI(token);
