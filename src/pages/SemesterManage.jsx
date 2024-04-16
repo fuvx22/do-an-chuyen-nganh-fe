@@ -107,7 +107,7 @@ function SemesterManage() {
       });
       semesterIdRef.current.focus();
     }
-  };
+  }
 
   const handleDeleteSemester = async (index) => {
     try {
