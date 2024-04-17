@@ -169,3 +169,32 @@ export const fetchCourseSchedulesBySemesterAPI = async (token, semesterId) => {
   );
   return response.data;
 };
+
+// Course Registration
+export const createNewCourseRegisAPI = async (data, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/course-regis/`, data, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const getCourseRegisByUserIdAPI = async (userId, token) => { 
+  const response = await axios.get(`${API_ROOT}/v1/course-regis/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+}
+
+export const deleteCourseRegisAPI = async (data, token) => {
+  const response = await axios.delete(`${API_ROOT}/v1/course-regis/`, {
+    data: data,
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};

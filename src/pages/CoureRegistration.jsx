@@ -2,7 +2,11 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import Navbar from "../components/Navbar";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
-import { fetchCourseSchedulesBySemesterAPI, fetchMajorsAPI } from "../apis";
+import { fetchCourseSchedulesBySemesterAPI,
+         fetchMajorsAPI, 
+         createNewCourseRegisAPI, 
+         getCourseRegisByUserIdAPI,
+         deleteCourseRegisAPI } from "../apis";
 import { toast } from "react-toastify";
 
 function CourseRegistration() {
@@ -20,18 +24,31 @@ function CourseRegistration() {
 
   useEffect(() => {
     if (!token) {
-      navigate("/login");
+      navigate("/");
     }
 
     fetchCourseSchedulesBySemesterAPI(token, currentSemesterId).then((data) => {
       setCourseSchedules(data);
-      console.log(data);
     });
 
     fetchMajorsAPI(token).then((data) => {
       majors.current = data;
     });
+
   }, []);
+
+  const fetchData = () => {
+    getCourseRegisByUserIdAPI(userData?._id, token).then(data => {
+      data.filter( cs => {
+        return cs.semesterId === currentSemesterId;
+      })
+      setSelectedCourses(data);
+    });
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [userData]);
 
   useEffect(() => {
     if (selectedMajor == "" && findCourse == "") {
@@ -76,22 +93,71 @@ function CourseRegistration() {
     setTotalCredits(total);
   };
 
-  const handleSelectCourseSchedule = (e) => {
+  const handleDeleteCourseRegis = async (cs) => {
+    await deleteCourseRegisAPI({ _id: cs.courseRegisId, courseScheduleId: cs._id }, token);
+    fetchData();
+    filtedcourseSchedules.find((c) => {
+      if (c._id === cs._id) {
+        c.maxQuantity += 1;
+        setSelectedCourses([...selectedCourses, c]);
+        return;
+      }
+    });
+    toast.info("Xóa học phần thành công")
+  };
+
+  const handleSelectCourseSchedule = async (e) => {
     const selectedCS = courseSchedules.find((cs) => cs._id === e.target.value);
 
     if (e.target.checked) {
       // Calculate what the total credits would be if we add this course
       const newTotalCredits = totalCredits + selectedCS.course.courseCredits;
 
-      if (
-        selectedCourses.some((cs) => cs.course._id === selectedCS.course._id)
-      ) {
+
+      // Ràng buộc ngành học
+      // if(selectedCS.course.majorId !== userData.majorId){
+      //   toast.error("Môn học không thuộc ngành học", {
+      //     position: "top-center",
+      //   });
+      //   e.target.checked = false;
+      //   return;
+      // }
+
+      if (selectedCourses.some((cs) => cs.course._id === selectedCS.course._id)) {
         toast.error("Môn học đã được chọn", {
           position: "top-center",
         });
         e.target.checked = false;
         return;
       }
+
+      if (selectedCS.maxQuantity === 0) {
+        toast.error("Số lượng đăng kí đã hết", {
+          position: "top-center",
+        });
+        e.target.checked = false;
+        return;
+      }
+
+      // Ràng buộc môn tiên quyết
+      //...
+
+      // Ràng buộc trùng lịch học
+      let check = false;
+      selectedCourses.forEach((cs) => {
+        if (
+          cs.period.some((p) => selectedCS.period.includes(p)) &&
+          cs.dayOfWeek === selectedCS.dayOfWeek 
+        ) {
+          toast.error("Trùng lịch học với môn: "+cs.course.name, {
+            position: "top-center", 
+          });
+          e.target.checked = false;
+          check = true;
+          return;
+        }
+      });
+      if (check) return;
 
       // Only add the course if the new total credits would not exceed 26
       if (newTotalCredits > 26) {
@@ -102,22 +168,39 @@ function CourseRegistration() {
         return;
       }
 
-      setSelectedCourses([...selectedCourses, selectedCS]);
-      setTotalCredits(newTotalCredits);
-    } else {
-      // If unchecking the checkbox, remove the course as before
-      setSelectedCourses(
-        selectedCourses.filter((cs) => cs._id !== e.target.value)
+      await createNewCourseRegisAPI(
+        {
+          courseScheduleId: selectedCS._id,
+          userId: userData._id,
+        },
+        token
       );
-      // And update the total credits
-      setTotalCredits(totalCredits - selectedCS.course.courseCredits);
+
+      toast.success("Đăng ký học phần thành công", {position: "top-left"});
+
+      filtedcourseSchedules.find((cs) => {
+        if (cs._id === selectedCS._id) {
+          cs.maxQuantity -= 1;
+          setSelectedCourses([...selectedCourses, cs]);
+          return;
+        }
+      });
+
+      fetchData();
+    } else {
+      selectedCourses.find((cs) => {
+        if (cs._id === selectedCS._id) {
+          handleDeleteCourseRegis(cs);
+          return;
+        }
+      });
     }
   };
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
       <Navbar user={userData} />
-      <div className="my-3">
+      <div className="my-3" style={{ minHeight: "80vh" }}>
         <h4 className="title">
           <i className="fa-solid fa-book me-2"></i>
           Đăng ký môn học học kì 2 - năm học 2023 - 2024
@@ -190,6 +273,9 @@ function CourseRegistration() {
                         value={cs?._id}
                         onChange={(e) => handleSelectCourseSchedule(e)}
                         style={{ cursor: "pointer" }}
+                        checked={selectedCourses.some( 
+                          (sc) => sc._id === cs._id
+                        )}
                       />
                     </td>
                     <td>{cs?.course?.courseId}</td>
@@ -233,9 +319,9 @@ function CourseRegistration() {
               {selectedCourses.map((cs, idx) => (
                 <tr key={idx}>
                   <td className="text-center">
-                    <a href="" className="btn btn-sm btn-danger">
-                      <i className="fas fa-trash"></i>
-                    </a>
+                    <button href="" className="btn btn-sm btn-danger" onClick={() => handleDeleteCourseRegis(cs)}>
+                      <i className="fas fa-trash"></i>  
+                    </button>
                   </td>
                   <td>{cs?.course?.courseId}</td>
                   <td>{cs?.course?.name}</td>
