@@ -218,3 +218,7 @@ button {
 .footer {
   background-color: var(--primary-color);
 }
+
+.notify-content > img {
+  max-width: 100%;
+}
