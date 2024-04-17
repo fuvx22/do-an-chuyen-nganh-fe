@@ -14,41 +14,13 @@ function Navbar(props) {
     localStorage.removeItem("user-token");
     navigate("/");
   };
-  const handleCourseManger = () => {
+  const redirect = (url) => {
     if (token) {
-      navigate("/course-manage");
+      navigate(url);
     } else {
       navigate("/");
     }
-  };
-  const handleCheckInfo = () => {
-    if (token) {
-      navigate("/userBoard");
-    } else {
-      navigate("/");
-    }
-  };
-  const handleMajorManager = () => {
-    if (token) {
-      navigate("/major-manage");
-    } else {
-      navigate("/");
-    }
-  };
-  const handleInstructorManager = () => {
-    if (token) {
-      navigate("/instructor-manage");
-    } else {
-      navigate("/");
-    }
-  };
-  const handleNotifyManager = () => {
-    if (token) {
-      navigate("/notify-manage");
-    } else {
-      navigate("/");
-    }
-  };
+  }
   return (
     <div className="my-navbar px-2">
       <button
@@ -71,7 +43,7 @@ function Navbar(props) {
           alt=""
         />
         <ul className="dropdown-menu dropdown-menu-right overflow-hidden py-0 end-0 top-100">
-          <li className="dropdown-item" onClick={handleCheckInfo}>
+          <li className="dropdown-item" onClick={() => redirect("/userBoard")}>
             Thông tin cá nhân
           </li>
           <div className="dropdown-divider m-0"></div>
@@ -96,29 +68,29 @@ function Navbar(props) {
         <ul className="side-menu-option-list mt-5">
           <li className="side-menu-option" onClick={() => navigate("/dashBoard")}>Trang chủ</li>
           {role === "admin" && (
-            <li className="side-menu-option" onClick={handleInstructorManager}>
+            <li className="side-menu-option" onClick={() => redirect("/instructor-manage")}>
               Quản lí Giảng Viên
             </li>
           )}
           {role === "admin" && (
-            <li className="side-menu-option" onClick={handleCourseManger}>
+            <li className="side-menu-option" onClick={() => redirect("/course-manage")}>
               Quản lí môn học
             </li>
           )}
           {role === "admin" && (
-            <li className="side-menu-option" onClick={handleMajorManager}>
+            <li className="side-menu-option" onClick={() => redirect("/major-manage")}>
               Quản lí khoa
             </li>
           )}
           {role === "admin" && (
-            <li className="side-menu-option" onClick={handleNotifyManager}>
+            <li className="side-menu-option" onClick={() => redirect("/notify-manage")}>
               Quản lí thông báo
             </li>
           )}
-          <li className="side-menu-option" onClick={handleCheckInfo}>
+          <li className="side-menu-option" onClick={() => redirect("/userBoard")}>
             Thông tin cá nhân
           </li>
-          <li className="side-menu-option">Đăng ký học phần</li>
+          <li className="side-menu-option" onClick={() => redirect("/course-registration")}>Đăng ký học phần</li>
           <li className="side-menu-option">Xem thời khóa biểu tuần</li>
           <li className="side-menu-option">Xem thời khóa biểu học kì</li>
         </ul>
