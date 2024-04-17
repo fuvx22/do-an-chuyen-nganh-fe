@@ -139,7 +139,9 @@ export const createNewNotifyAPI = async (data, token) => {
 };
 
 export const findOneNotifyAPI = async (id) => {
-  const response = await axios.get(`${API_ROOT}/v1/notify/find`, {params: { id: id }});
+  const response = await axios.get(`${API_ROOT}/v1/notify/find`, {
+    params: { id: id },
+  });
   return response.data;
 };
 
@@ -152,5 +154,18 @@ export const deleteNotifyAPI = async (data) => {
   const response = await axios.delete(`${API_ROOT}/v1/notify/delete`, {
     data: data,
   });
+  return response.data;
+};
+
+// Course Schedule
+export const fetchCourseSchedulesBySemesterAPI = async (token, semesterId) => {
+  const response = await axios.get(
+    `${API_ROOT}/v1/courseSchedule/${semesterId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
   return response.data;
 };

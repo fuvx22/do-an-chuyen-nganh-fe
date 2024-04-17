@@ -1,16 +1,118 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import Navbar from "../components/Navbar";
-// import { useUser } from "../context/userContext";
 import { UserContext } from "../context/userContext";
-import { Link, useNavigate } from "react-router-dom";
-import { fetchNotifiesAPI } from "../apis";
-import { convert } from "html-to-text";
+import { useNavigate } from "react-router-dom";
+import { fetchCourseSchedulesBySemesterAPI, fetchMajorsAPI } from "../apis";
+import { toast } from "react-toastify";
 
 function CourseRegistration() {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
-  const [notifies, setNotifies] = useState([]);
+  const [courseSchedules, setCourseSchedules] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [totalCredits, setTotalCredits] = useState(0);
+  const [selectedMajor, setSelectedMajor] = useState("");
+  const [findCourse, setFindCourse] = useState("");
+  const [filtedcourseSchedules, setFiltedcourseSchedules] = useState([]);
+  let majors = useRef([]);
   const token = JSON.parse(localStorage.getItem("user-token"));
+  const currentSemesterId = "661d4010d3f364ab77db298b";
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+
+    fetchCourseSchedulesBySemesterAPI(token, currentSemesterId).then((data) => {
+      setCourseSchedules(data);
+      console.log(data);
+    });
+
+    fetchMajorsAPI(token).then((data) => {
+      majors.current = data;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedMajor == "" && findCourse == "") {
+      setFiltedcourseSchedules([]);
+    } else {
+      handleFilterCourseSechedules();
+    }
+  }, [selectedMajor, findCourse]);
+
+  useEffect(() => {
+    calculateTotalCredits();
+  }, [selectedCourses]);
+
+  const handleFilterCourseSechedules = () => {
+    let filt = courseSchedules.filter((cs) => {
+      return (
+        (cs.course.name.toLowerCase().includes(findCourse.toLowerCase()) ||
+          cs.course.courseId
+            .toLowerCase()
+            .includes(findCourse.toLowerCase())) &&
+        (selectedMajor ? cs.course.majorId === selectedMajor : true)
+      );
+    });
+    // sort by course name
+    filt.sort((a, b) => {
+      if (a.course.name < b.course.name) {
+        return -1;
+      }
+      if (a.course.name > b.course.name) {
+        return 1;
+      }
+      return 0;
+    });
+    setFiltedcourseSchedules(filt);
+  };
+
+  const calculateTotalCredits = () => {
+    let total = 0;
+    selectedCourses.forEach((cs) => {
+      total += cs.course.courseCredits;
+    });
+    setTotalCredits(total);
+  };
+
+  const handleSelectCourseSchedule = (e) => {
+    const selectedCS = courseSchedules.find((cs) => cs._id === e.target.value);
+
+    if (e.target.checked) {
+      // Calculate what the total credits would be if we add this course
+      const newTotalCredits = totalCredits + selectedCS.course.courseCredits;
+
+      if (
+        selectedCourses.some((cs) => cs.course._id === selectedCS.course._id)
+      ) {
+        toast.error("Môn học đã được chọn", {
+          position: "top-center",
+        });
+        e.target.checked = false;
+        return;
+      }
+
+      // Only add the course if the new total credits would not exceed 26
+      if (newTotalCredits > 26) {
+        toast.error("Số tín chỉ vượt quá giới hạn", {
+          position: "top-center",
+        });
+        e.target.checked = false;
+        return;
+      }
+
+      setSelectedCourses([...selectedCourses, selectedCS]);
+      setTotalCredits(newTotalCredits);
+    } else {
+      // If unchecking the checkbox, remove the course as before
+      setSelectedCourses(
+        selectedCourses.filter((cs) => cs._id !== e.target.value)
+      );
+      // And update the total credits
+      setTotalCredits(totalCredits - selectedCS.course.courseCredits);
+    }
+  };
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -21,20 +123,37 @@ function CourseRegistration() {
           Đăng ký môn học học kì 2 - năm học 2023 - 2024
         </h4>
         <div className="filter-container d-flex gap-2 mb-3">
-          <div className="d-grid flex-grow-1">
+          <div className="d-grid flex-grow-1" style={{ maxWidth: "50%" }}>
             <label className="form-label" htmlFor="major-select">
               Lọc theo khoa:
             </label>
-            <select name="" id="major-select" className="form-select">
-              <option value="">Công nghệ thông tin</option>
-              <option value="">Công nghệ thông tin</option>
+            <select
+              name=""
+              id="major-select"
+              className="form-select"
+              onChange={(e) => {
+                setSelectedMajor(e.target.value);
+              }}
+            >
+              <option value="">Lọc học phần theo ngành</option>
+              {majors.current.map((major) => (
+                <option value={major?._id} key={major?._id}>
+                  {major?.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="d-grid flex-grow-1">
             <label className="form-label" htmlFor="find-inp">
               Tìm kiếm học phần:
             </label>
-            <input type="text" id="find-inp" className="form-control" />
+            <input
+              type="text"
+              id="find-inp"
+              className="form-control"
+              value={findCourse}
+              onChange={(e) => setFindCourse(e.target.value)}
+            />
           </div>
         </div>
         <div className="course-registraions mb-3">
@@ -63,18 +182,27 @@ function CourseRegistration() {
                 </tr>
               </thead>
               <tbody className="table-bordered">
-                {Array.from({ length: 50 }, (_, index) => (
-                  <tr key={index}>
+                {filtedcourseSchedules.map((cs, idx) => (
+                  <tr key={idx}>
                     <td className="text-center">
-                      <input type="checkbox" name="" id="" />
+                      <input
+                        type="checkbox"
+                        value={cs?._id}
+                        onChange={(e) => handleSelectCourseSchedule(e)}
+                        style={{ cursor: "pointer" }}
+                      />
                     </td>
-                    <td>841044</td>
-                    <td>Lập trình hướng đối tượng</td>
-                    <td>01</td>
-                    <td>50</td>
-                    <td>4</td>
+                    <td>{cs?.course?.courseId}</td>
+                    <td>{cs?.course?.name}</td>
+                    <td>{cs?.group}</td>
+                    <td>{cs?.maxQuantity}</td>
+                    <td>{cs?.course?.courseCredits}</td>
                     <td>
-                      Thứ 2, tiết 1 đến 5, phòng C.E402, giảng viên Nguyễn Văn A
+                      {`${cs?.dayOfWeek}, tiết ${cs?.period[0]} đến ${
+                        cs?.period[cs?.period.length - 1]
+                      }, phòng ${cs?.roomNumber}, giảng viên ${
+                        cs?.instructor?.name
+                      }`}
                     </td>
                   </tr>
                 ))}
@@ -85,12 +213,12 @@ function CourseRegistration() {
         <div className="resgisted-courses-container">
           <h5>
             Danh sách môn đã đăng kí:
-            <span className="text-danger ms-2">0 môn, 0 tín chỉ</span>
+            <span className="text-danger ms-2">
+              {selectedCourses.length} môn, {totalCredits} tín chỉ
+            </span>
           </h5>
           <table className="table table-sm">
-            <thead
-              className="align-middle theader"
-            >
+            <thead className="align-middle theader">
               <tr>
                 <th scope="col">Xóa</th>
                 <th scope="col">Mã môn học</th>
@@ -102,20 +230,24 @@ function CourseRegistration() {
               </tr>
             </thead>
             <tbody className="table-bordered">
-              {Array.from({ length: 5 }, (_, index) => (
-                <tr key={index}>
+              {selectedCourses.map((cs, idx) => (
+                <tr key={idx}>
                   <td className="text-center">
                     <a href="" className="btn btn-sm btn-danger">
                       <i className="fas fa-trash"></i>
                     </a>
                   </td>
-                  <td>841044</td>
-                  <td>Lập trình hướng đối tượng</td>
-                  <td>01</td>
-                  <td>50</td>
-                  <td>4</td>
+                  <td>{cs?.course?.courseId}</td>
+                  <td>{cs?.course?.name}</td>
+                  <td>{cs?.group}</td>
+                  <td>{cs?.maxQuantity}</td>
+                  <td>{cs?.course?.courseCredits}</td>
                   <td>
-                    Thứ 2, tiết 1 đến 5, phòng C.E402, giảng viên Nguyễn Văn A
+                    {`${cs?.dayOfWeek}, tiết ${cs?.period[0]} đến ${
+                      cs?.period[cs?.period.length - 1]
+                    }, phòng ${cs?.roomNumber}, giảng viên ${
+                      cs?.instructor?.name
+                    }`}
                   </td>
                 </tr>
               ))}
