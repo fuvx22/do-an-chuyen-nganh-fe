@@ -17,6 +17,7 @@ let indexToEdit = -1;
 
 const customStyles = {
   content: {
+    width: "30%",
     top: "50%",
     left: "50%",
     right: "auto",
@@ -106,24 +107,20 @@ function MajorManage() {
     }
   };
 
-  const handleEditMajor = (index) => {
-    setIsEdit(true);
-    indexToEdit = index;
-    setMajorId(majors[index].majorId);
-    setMajorName(majors[index].name);
-    setMajorType(majors[index].type);
-  };
 
   const confirmEdit = async () => {
-    if (majorId && majorName && majorType) {
-      majors[indexToEdit].majorId = majorId;
-      majors[indexToEdit].name = majorName;
-      majors[indexToEdit].type = majorType;
-
+    const { majorId, name, type} = selectedMajor;
+    if (
+      majorId != "" ||
+      name != "" ||
+      type != "" 
+    ) {
       try {
-        await editMajorAPI(majors[indexToEdit]);
+        await editMajorAPI(selectedMajor);
+        const updatedMajor = await fetchMajorsAPI(token);
+        setMajors(updatedMajor);
         toast.success("Cập nhật khoa thành công");
-        cancelActivity();
+        closeModal();
       } catch (error) {
         toast.error(majorErrorClassify(error), {
           position: "top-center",
@@ -141,10 +138,11 @@ function MajorManage() {
   };
 
   const handleEditModal = async (major) => {
-    console.log("Đã bấm vào edit")
     setSelectedMajor(major)
     setIsOpen(true);
   };
+
+  
 
   const handleDeleteMajor = async (index) => {
     try {
@@ -226,9 +224,9 @@ function MajorManage() {
         <div className="control-item d-flex gap-2">
           <button
             className="btn btn-primary"
-            onClick={() => (isEdit ? confirmEdit() : handleAddMajor())}
+            onClick={handleAddMajor}
           >
-            {!isEdit ? "Thêm khoa mới" : "Cập nhật khoa"}
+            Thêm khoa mới
           </button>
           <button
             className="btn btn-outline-danger"
@@ -258,15 +256,7 @@ function MajorManage() {
                 <td>{major.majorId}</td>
                 <td>{major.name}</td>
                 <td>{types.find((m) => m._id == major.type)?.name}</td>
-                {/* <td>
-                  <button
-                    onClick={() => handleEditMajor(index)}
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                </td> */}
+  
                 <td style={{ minWidth: "110px", textAlign: "right" }}>
                   <button
                     onClick={() => {
@@ -301,7 +291,7 @@ function MajorManage() {
           </div>
 
           <div className="modal-body">
-              <form action="mb-3">
+              <form>
               <div className="mb-3">
                 <label htmlFor="majorId" className="form-label">
                   Mã khoa
@@ -317,7 +307,7 @@ function MajorManage() {
 
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
-                  Tên giảng viên
+                  Tên khoa
                 </label>
                 <input
                   type="text"
@@ -344,7 +334,7 @@ function MajorManage() {
                   onChange={(e) =>
                     setSelectedMajor({
                       ...selectedMajor,
-                      majorId: e.target.value,
+                      type: e.target.value,
                     })
                   }
                 >
@@ -369,7 +359,7 @@ function MajorManage() {
             </button>
             <button
               type="button"
-              onClick={handleEditMajor}
+              onClick={confirmEdit}
               className="btn btn-primary mx-1"
             >
               Lưu thay đổi
