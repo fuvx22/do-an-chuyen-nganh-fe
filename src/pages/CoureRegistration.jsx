@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import Navbar from "../components/Navbar";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
-import { fetchCourseSchedulesBySemesterAPI,
-         fetchMajorsAPI, 
-         createNewCourseRegisAPI, 
-         getCourseRegisByUserIdAPI,
-         deleteCourseRegisAPI } from "../apis";
+import {
+  fetchCourseSchedulesBySemesterAPI,
+  fetchMajorsAPI,
+  createNewCourseRegisAPI,
+  getCourseRegisByUserIdAPI,
+  deleteCourseRegisAPI,
+} from "../apis";
 import { toast } from "react-toastify";
 
 function CourseRegistration() {
@@ -19,8 +21,10 @@ function CourseRegistration() {
   const [findCourse, setFindCourse] = useState("");
   const [filtedcourseSchedules, setFiltedcourseSchedules] = useState([]);
   let majors = useRef([]);
+  let historyCourseRegis = useRef([]);
   const token = JSON.parse(localStorage.getItem("user-token"));
   const currentSemesterId = "661d4010d3f364ab77db298b";
+  const [isEnable, setIsEnable] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -34,17 +38,19 @@ function CourseRegistration() {
     fetchMajorsAPI(token).then((data) => {
       majors.current = data;
     });
-
   }, []);
 
   const fetchData = () => {
-    getCourseRegisByUserIdAPI(userData?._id, token).then(data => {
-      data.filter( cs => {
+    getCourseRegisByUserIdAPI(userData?._id, token).then((data) => {
+      const currentSemesterCourseRegis = data.filter((cs) => {
         return cs.semesterId === currentSemesterId;
-      })
-      setSelectedCourses(data);
+      });
+      historyCourseRegis.current = data.filter((cs) => {
+        return cs.semesterId !== currentSemesterId;
+      });
+      setSelectedCourses(currentSemesterCourseRegis);
     });
-  }
+  };
 
   useEffect(() => {
     fetchData();
@@ -94,7 +100,10 @@ function CourseRegistration() {
   };
 
   const handleDeleteCourseRegis = async (cs) => {
-    await deleteCourseRegisAPI({ _id: cs.courseRegisId, courseScheduleId: cs._id }, token);
+    await deleteCourseRegisAPI(
+      { _id: cs.courseRegisId, courseScheduleId: cs._id },
+      token
+    );
     fetchData();
     filtedcourseSchedules.find((c) => {
       if (c._id === cs._id) {
@@ -103,7 +112,7 @@ function CourseRegistration() {
         return;
       }
     });
-    toast.info("Xóa học phần thành công")
+    toast.info("Xóa học phần thành công");
   };
 
   const handleSelectCourseSchedule = async (e) => {
@@ -112,7 +121,6 @@ function CourseRegistration() {
     if (e.target.checked) {
       // Calculate what the total credits would be if we add this course
       const newTotalCredits = totalCredits + selectedCS.course.courseCredits;
-
 
       // Ràng buộc ngành học
       // if(selectedCS.course.majorId !== userData.majorId){
@@ -123,7 +131,9 @@ function CourseRegistration() {
       //   return;
       // }
 
-      if (selectedCourses.some((cs) => cs.course._id === selectedCS.course._id)) {
+      if (
+        selectedCourses.some((cs) => cs.course._id === selectedCS.course._id)
+      ) {
         toast.error("Môn học đã được chọn", {
           position: "top-center",
         });
@@ -140,17 +150,36 @@ function CourseRegistration() {
       }
 
       // Ràng buộc môn tiên quyết
-      //...
+      if (selectedCS.course.preRequireCourse != "no") {
+        let check = false;
+        historyCourseRegis.current.forEach((cs) => {
+          if (cs.course.courseId === selectedCS.course.preRequireCourse) {
+            check = true;
+            return;
+          }
+        });
+        if (!check) {
+          toast.error(
+            "Vui lòng học môn tiên quyết: " +
+              selectedCS.course.preRequireCourse,
+            {
+              position: "top-center",
+            }
+          );
+          e.target.checked = false;
+          return;
+        }
+      }
 
       // Ràng buộc trùng lịch học
       let check = false;
       selectedCourses.forEach((cs) => {
         if (
           cs.period.some((p) => selectedCS.period.includes(p)) &&
-          cs.dayOfWeek === selectedCS.dayOfWeek 
+          cs.dayOfWeek === selectedCS.dayOfWeek
         ) {
-          toast.error("Trùng lịch học với môn: "+cs.course.name, {
-            position: "top-center", 
+          toast.error("Trùng lịch học với môn: " + cs.course.name, {
+            position: "top-center",
           });
           e.target.checked = false;
           check = true;
@@ -168,25 +197,28 @@ function CourseRegistration() {
         return;
       }
 
-      await createNewCourseRegisAPI(
-        {
-          courseScheduleId: selectedCS._id,
-          userId: userData._id,
-        },
-        token
-      );
+      try {
+        await createNewCourseRegisAPI(
+          {
+            courseScheduleId: selectedCS._id,
+            userId: userData._id,
+          },
+          token
+        );
+        toast.success("Đăng ký học phần thành công", { position: "top-left" });
 
-      toast.success("Đăng ký học phần thành công", {position: "top-left"});
+        filtedcourseSchedules.find((cs) => {
+          if (cs._id === selectedCS._id) {
+            cs.maxQuantity -= 1;
+            setSelectedCourses([...selectedCourses, cs]);
+            return;
+          }
+        });
 
-      filtedcourseSchedules.find((cs) => {
-        if (cs._id === selectedCS._id) {
-          cs.maxQuantity -= 1;
-          setSelectedCourses([...selectedCourses, cs]);
-          return;
-        }
-      });
-
-      fetchData();
+        fetchData();
+      } catch (error) {
+        toast.error("Số lượng đăng kí đã hết", { position: "top-center" });
+      }
     } else {
       selectedCourses.find((cs) => {
         if (cs._id === selectedCS._id) {
@@ -240,6 +272,12 @@ function CourseRegistration() {
           </div>
         </div>
         <div className="course-registraions mb-3">
+          {!isEnable && (
+            <h5 className="text-danger text-center">
+              <i className="fa-solid fa-circle-exclamation px-1"></i>
+              Ngoài thời gian đăng kí môn
+            </h5>
+          )}
           <h5>Danh sách môn mở đăng kí</h5>
           <div
             className="course-to-regis-container"
@@ -273,9 +311,11 @@ function CourseRegistration() {
                         value={cs?._id}
                         onChange={(e) => handleSelectCourseSchedule(e)}
                         style={{ cursor: "pointer" }}
-                        checked={selectedCourses.some( 
+                        checked={selectedCourses.some(
                           (sc) => sc._id === cs._id
                         )}
+                        disabled={!isEnable}
+                        className="course-regis-control"
                       />
                     </td>
                     <td>{cs?.course?.courseId}</td>
@@ -319,8 +359,13 @@ function CourseRegistration() {
               {selectedCourses.map((cs, idx) => (
                 <tr key={idx}>
                   <td className="text-center">
-                    <button href="" className="btn btn-sm btn-danger" onClick={() => handleDeleteCourseRegis(cs)}>
-                      <i className="fas fa-trash"></i>  
+                    <button
+                      href=""
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteCourseRegis(cs)}
+                      disabled={!isEnable}
+                    >
+                      <i className="fas fa-trash"></i>
                     </button>
                   </td>
                   <td>{cs?.course?.courseId}</td>
