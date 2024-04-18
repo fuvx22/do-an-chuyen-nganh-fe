@@ -8,16 +8,35 @@ import {
   editMajorAPI,
   deleteMajorAPI,
 } from "../apis";
-import { courseErrorClassify, majorErrorClassify } from "../utils/validator";
+import { majorErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
 
 let indexToEdit = -1;
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
 
 function MajorManage() {
   const [majors, setMajors] = useState([]);
   const { userData } = useContext(UserContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedMajor, setSelectedMajor] = useState(null)
   const token = JSON.parse(localStorage.getItem("user-token"));
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+
   useEffect(() => {
     if (!token) {
       navigate("/");
@@ -119,6 +138,12 @@ function MajorManage() {
       });
       majorIdRef.current.focus();
     }
+  };
+
+  const handleEditModal = async (major) => {
+    console.log("Đã bấm vào edit")
+    setSelectedMajor(major)
+    setIsOpen(true);
   };
 
   const handleDeleteMajor = async (index) => {
@@ -227,13 +252,13 @@ function MajorManage() {
             </tr>
           </thead>
           <tbody>
-            {majors.map((c, index) => (
+            {majors.map((major, index) => (
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
-                <td>{c.majorId}</td>
-                <td>{c.name}</td>
-                <td>{types.find((m) => m._id == c.type)?.name}</td>
-                <td>
+                <td>{major.majorId}</td>
+                <td>{major.name}</td>
+                <td>{types.find((m) => m._id == major.type)?.name}</td>
+                {/* <td>
                   <button
                     onClick={() => handleEditMajor(index)}
                     type="button"
@@ -241,20 +266,116 @@ function MajorManage() {
                   >
                     <i className="fas fa-edit"></i>
                   </button>
-                </td>
-                <td>
+                </td> */}
+                <td style={{ minWidth: "110px", textAlign: "right" }}>
                   <button
-                    onClick={() => handleDeleteMajor(index)}
-                    type="button"
-                    className="btn btn-danger btn-sm"
+                    onClick={() => {
+                      handleEditModal(major);
+                    }}
+                    className="btn btn-primary"
                   >
-                    <i className="fas fa-trash"></i>
+                    <i className="fas fa-edit"></i>
                   </button>
+                  <button
+                      onClick={() => handleDeleteMajor(index)}
+                      className="btn btn-danger mx-1"
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
                 </td>
+                <td></td>
               </tr>
             ))}
           </tbody>
         </table>
+
+
+        <Modal
+          isOpen={isOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <div className="modal-header">
+            <h4 className="modal-title">Chỉnh sửa </h4>
+          </div>
+
+          <div className="modal-body">
+              <form action="mb-3">
+              <div className="mb-3">
+                <label htmlFor="majorId" className="form-label">
+                  Mã khoa
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="majorId"
+                  value={selectedMajor?.majorId || ""}
+                  readOnly
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Tên giảng viên
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  value={selectedMajor?.name || ""}
+                  onChange={(e) =>
+                    setSelectedMajor({
+                      ...selectedMajor,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="type" className="form-label">
+                  Nhóm ngành
+                </label>
+                <select
+                  className="form-select"
+                  id="type"
+                  value={selectedMajor?.type || ""}
+                  onChange={(e) =>
+                    setSelectedMajor({
+                      ...selectedMajor,
+                      majorId: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Chọn nhóm ngành</option>
+                  {typesData.map((type) => (
+                    <option key={type._id} value={type._id}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              </form>
+          </div>
+
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={closeModal}
+            >
+              Đóng
+            </button>
+            <button
+              type="button"
+              onClick={handleEditMajor}
+              className="btn btn-primary mx-1"
+            >
+              Lưu thay đổi
+            </button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

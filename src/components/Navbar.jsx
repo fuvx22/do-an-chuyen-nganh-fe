@@ -49,6 +49,13 @@ function Navbar(props) {
       navigate("/");
     }
   };
+  const handleCourseScheduleManager = () => {
+    if (token) {
+      navigate("/course-schedule-manage");
+    } else {
+      navigate("/");
+    }
+  };
   const handleNotifyManager = () => {
     if (token) {
       navigate("/notify-manage");
@@ -110,6 +117,11 @@ function Navbar(props) {
           {role === "admin" && (
             <li className="side-menu-option" onClick={handleCourseManger}>
               Quản lí môn học
+            </li>
+          )}
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleCourseScheduleManager}>
+              Quản lí đăng ký môn học
             </li>
           )}
           {role === "admin" && (

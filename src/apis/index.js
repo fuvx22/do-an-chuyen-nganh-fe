@@ -63,6 +63,17 @@ export const createNewMajorAPI = async (data, token) => {
   return response.data;
 };
 
+export const editMajorAPI = async (data) => {
+  const response = await axios.put(`${API_ROOT}/v1/major/edit`, data);
+  return response.data;
+};
+
+export const deleteMajorAPI = async (data) => {
+  const response = await axios.delete(`${API_ROOT}/v1/major/delete`, {
+    data: data,
+  });
+  return response.data;
+};
 // Semester
 export const fetchSemestersAPI = async (token) => {
   const response = await axios.get(`${API_ROOT}/v1/semester/`, {
@@ -94,17 +105,37 @@ export const deleteSemesterAPI = async (data) => {
   return response.data;
 };
 
-export const editMajorAPI = async (data) => {
-  const response = await axios.put(`${API_ROOT}/v1/major/edit`, data);
+// CourseSchedule
+export const fetchCourseSchedulesAPI = async (token) => {
+  const response = await axios.get(`${API_ROOT}/v1/courseSchedule/`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
   return response.data;
 };
 
-export const deleteMajorAPI = async (data) => {
-  const response = await axios.delete(`${API_ROOT}/v1/major/delete`, {
+export const createNewCourseScheduleAPI = async (data, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/courseSchedule/`, data, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const editCourseScheduleAPI = async (data) => {
+  const response = await axios.put(`${API_ROOT}/v1/courseSchedule/edit`, data);
+  return response.data;
+};
+
+export const deleteCourseScheduleAPI = async (data) => {
+  const response = await axios.delete(`${API_ROOT}/v1/courseSchedule/delete`, {
     data: data,
   });
   return response.data;
 };
+
 export const getInstructor = async (token) => {
   const response = await axios.get(`${API_ROOT}/v1/instructor/`, {
     headers: {

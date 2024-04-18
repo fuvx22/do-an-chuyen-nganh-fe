@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
-import { fetchUserAPI } from "../apis";
 import {
+    fetchUserAPI,
     fetchSemestersAPI,
     createNewSemesterAPI,
     editSemesterAPI,
@@ -40,8 +40,8 @@ function SemesterManage() {
 
   const navigate = useNavigate();
   const [semesterName, setSemesterName] = useState("");
-  const [startSemesterDate, setStartSemesterDate] = useState("");
-  const [endSemesterDate, setEndSemesterDate] = useState("");
+  const [startSemesterDate, setStartSemesterDate] = useState(new Date());
+  const [endSemesterDate, setEndSemesterDate] = useState(new Date());
   
   const [isEdit, setIsEdit] = useState(false);
   const semesterIdRef = useRef(null);
@@ -132,7 +132,10 @@ function SemesterManage() {
     indexToEdit = -1;
   };
 
-  
+  const handleChangeStartDate = (e) => {
+    const selectedDate = new Date(e.target.value);
+    setStartSemesterDate(selectedDate.toISOString().split('T')[0]);
+  };
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -163,6 +166,10 @@ function SemesterManage() {
             onChange={(e) => {
               setStartSemesterDate(e.target.value);
             }}
+  //           value={new Date(startSemesterDate).toISOString().split('T')[0]}
+  //           onChange={(e) => {
+  //   setStartSemesterDate(new Date(e.target.value).toISOString().split('T')[0]);
+  // }}
             type="date"
             className="form-control"
             id="startSemesterDate"
