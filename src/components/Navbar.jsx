@@ -20,7 +20,51 @@ function Navbar(props) {
     } else {
       navigate("/");
     }
-  }
+  };
+  const handleCheckInfo = () => {
+    if (token) {
+      navigate("/userBoard");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleMajorManager = () => {
+    if (token) {
+      navigate("/major-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleInstructorManager = () => {
+    if (token) {
+      navigate("/instructor-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleSemesterManager = () => {
+    if (token) {
+      navigate("/semester-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleCourseScheduleManager = () => {
+    if (token) {
+      navigate("/course-schedule-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleNotifyManager = () => {
+    if (token) {
+      navigate("/notify-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  
+
   return (
     <div className="my-navbar px-2">
       <button
@@ -78,8 +122,18 @@ function Navbar(props) {
             </li>
           )}
           {role === "admin" && (
+            <li className="side-menu-option" onClick={handleCourseScheduleManager}>
+              Quản lí đăng ký môn học
+            </li>
+          )}
+          {role === "admin" && (
             <li className="side-menu-option" onClick={() => redirect("/major-manage")}>
               Quản lí khoa
+            </li>
+          )}
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleSemesterManager}>
+              Quản lí học kỳ
             </li>
           )}
           {role === "admin" && (
