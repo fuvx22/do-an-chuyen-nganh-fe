@@ -8,10 +8,13 @@ import {
   createNewCourseRegisAPI,
   getCourseRegisByUserIdAPI,
   deleteCourseRegisAPI,
+  fetchSemesterByIdAPI,
 } from "../apis";
 import { toast } from "react-toastify";
+import metadata from "../utils/metadata.json";
 
 function CourseRegistration() {
+  const [loadedMetatata] = metadata;
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   const [courseSchedules, setCourseSchedules] = useState([]);
@@ -22,9 +25,12 @@ function CourseRegistration() {
   const [filtedcourseSchedules, setFiltedcourseSchedules] = useState([]);
   let majors = useRef([]);
   let historyCourseRegis = useRef([]);
+  let currentSemester = useRef({});
   const token = JSON.parse(localStorage.getItem("user-token"));
-  const currentSemesterId = "661d4010d3f364ab77db298b";
-  const [isEnable, setIsEnable] = useState(false);
+  const currentSemesterId = loadedMetatata.currentSemesterId;
+  const [isEnable, setIsEnable] = useState(
+    loadedMetatata.isEnableCourseRegistration == "true"
+  );
 
   useEffect(() => {
     if (!token) {
@@ -37,6 +43,10 @@ function CourseRegistration() {
 
     fetchMajorsAPI(token).then((data) => {
       majors.current = data;
+    });
+
+    fetchSemesterByIdAPI(currentSemesterId).then((data) => {
+      currentSemester.current = data;
     });
   }, []);
 
@@ -235,7 +245,8 @@ function CourseRegistration() {
       <div className="my-3" style={{ minHeight: "80vh" }}>
         <h4 className="title">
           <i className="fa-solid fa-book me-2"></i>
-          Đăng ký môn học học kì 2 - năm học 2023 - 2024
+          Đăng ký môn học{" "}
+          {currentSemester?.current?.semesterName?.toLowerCase()}
         </h4>
         <div className="filter-container d-flex gap-2 mb-3">
           <div className="d-grid flex-grow-1" style={{ maxWidth: "50%" }}>

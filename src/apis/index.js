@@ -105,6 +105,11 @@ export const deleteSemesterAPI = async (data) => {
   return response.data;
 };
 
+export const fetchSemesterByIdAPI = async (id) => {
+  const response = await axios.get(`${API_ROOT}/v1/semester/${id}`);
+  return response.data;
+};
+
 // CourseSchedule
 export const fetchCourseSchedulesAPI = async (token) => {
   const response = await axios.get(`${API_ROOT}/v1/courseSchedule/`, {
@@ -242,14 +247,14 @@ export const createNewCourseRegisAPI = async (data, token) => {
   return response.data;
 };
 
-export const getCourseRegisByUserIdAPI = async (userId, token) => { 
+export const getCourseRegisByUserIdAPI = async (userId, token) => {
   const response = await axios.get(`${API_ROOT}/v1/course-regis/${userId}`, {
     headers: {
       Authorization: `Bearer ${token.accessToken}`,
     },
   });
   return response.data;
-}
+};
 
 export const deleteCourseRegisAPI = async (data, token) => {
   const response = await axios.delete(`${API_ROOT}/v1/course-regis/`, {
