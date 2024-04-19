@@ -14,9 +14,9 @@ import { modalStyles } from "../utils/constants";
 import { EditorState, ContentState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
-import { convertToRaw } from 'draft-js';
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
+import { convertToRaw } from "draft-js";
 import axios from "axios";
 
 function NotifyManage() {
@@ -40,9 +40,9 @@ function NotifyManage() {
     setCurrent({
       ...current,
       title: "",
-      content: ""
-    })
-  }
+      content: "",
+    });
+  };
 
   function closeModal() {
     setIsOpen(false);
@@ -60,34 +60,37 @@ function NotifyManage() {
 
   const handleEditBtnClick = (id) => {
     openModal();
-    setStatus("Chỉnh sửa")
-    const notifyToEdit = notifies.find( n => n._id === id)
+    setStatus("Chỉnh sửa");
+    const notifyToEdit = notifies.find((n) => n._id === id);
     const blocksFromHtml = htmlToDraft(notifyToEdit.content);
     const { contentBlocks, entityMap } = blocksFromHtml;
-    const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+    const contentState = ContentState.createFromBlockArray(
+      contentBlocks,
+      entityMap
+    );
     const editorStateToEdit = EditorState.createWithContent(contentState);
-    setEditorState(editorStateToEdit)
+    setEditorState(editorStateToEdit);
     setCurrent({
       _id: id,
       title: notifyToEdit.title,
-      content: notifyToEdit.content
-    })
-  }
+      content: notifyToEdit.content,
+    });
+  };
 
   const handleDeleteBtnClick = async (id) => {
     if (confirm("Bạn có chắc chắn muốn xóa?")) {
       try {
-        await deleteNotifyAPI({ _id: id})
-        const idx = notifies.findIndex(n => n._id == id);
+        await deleteNotifyAPI({ _id: id });
+        const idx = notifies.findIndex((n) => n._id == id);
         let newNotifies = [...notifies];
         newNotifies.splice(idx, 1);
         setNotifies(newNotifies);
-        toast.success("Xóa thành công")
+        toast.success("Xóa thành công");
       } catch (error) {
         toast.error("Xóa không thành công");
       }
     }
-  }
+  };
 
   const handleInputChange = (e) => {
     setCurrent({
@@ -106,27 +109,27 @@ function NotifyManage() {
 
   const handleSaveBtnClick = async () => {
     current.authorId = userData._id;
+    current.title = current.title.trim();
+    current.content = current.content.trim();
     try {
       if (status === "Thêm mới") {
         delete current._id;
         const newNotify = await createNewNotifyAPI(current, token);
         setNotifies([...notifies, newNotify]);
-      }
-      else if (status === "Chỉnh sửa") {  
+      } else if (status === "Chỉnh sửa") {
         const editedNotify = await editNotifyAPI(current);
-        const idx = notifies.findIndex(n => n._id == current._id);
-        
+        const idx = notifies.findIndex((n) => n._id == current._id);
+
         notifies.splice(idx, 1, editedNotify);
         setNotifies(notifies);
       }
-      toast.success(status+" thông báo thành công");
+      toast.success(status + " thông báo thành công");
       closeModal();
       removeState();
     } catch (error) {
-      toast.error("Thông tin không hợp lệ!")
-      console.error(error);
+      toast.error("Thông tin không hợp lệ!");
     }
-  }
+  };
 
   useEffect(() => {
     if (!token) {
@@ -151,25 +154,24 @@ function NotifyManage() {
     }
   }, [userData]);
 
+  //  async function uploadImageCallBack(file) {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append('image', file);
+  //     console.log(formData);
+  //     // Gửi yêu cầu POST đến API của ImgBB
+  //     const response = await axios.post('https://api.imgbb.com/1/upload', {
+  //       key: '8f1990d09f4b09b6cf0770b4183e116d',
+  //       body: formData,
+  //     });
 
-//  async function uploadImageCallBack(file) {
-//   try {
-//     const formData = new FormData();
-//     formData.append('image', file);
-//     console.log(formData);
-//     // Gửi yêu cầu POST đến API của ImgBB
-//     const response = await axios.post('https://api.imgbb.com/1/upload', {
-//       key: '8f1990d09f4b09b6cf0770b4183e116d', 
-//       body: formData,
-//     });
-
-//     // Trả về URL của ảnh đã tải lên
-//     return response.data.data.url;
-//   } catch (error) {
-//     console.error('Lỗi khi tải lên ảnh:', error);
-//     throw error;
-//   }
-//   }
+  //     // Trả về URL của ảnh đã tải lên
+  //     return response.data.data.url;
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải lên ảnh:', error);
+  //     throw error;
+  //   }
+  //   }
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -199,12 +201,16 @@ function NotifyManage() {
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{n?.title}</td>
-                <td style={{maxWidth: "400px"}}>{n?.content}</td>
+                <td className="truncate" style={{ maxWidth: "400px" }}>
+                  {n?.content}
+                </td>
                 <td>{n.author ? n?.author[0]?.name : userData.name}</td>
-                <td>{ new Date(n?.createAt).toLocaleDateString() }</td>
+                <td>{new Date(n?.createAt).toLocaleDateString()}</td>
                 <td>
                   <button
-                    onClick={() => { handleEditBtnClick(n?._id) }}
+                    onClick={() => {
+                      handleEditBtnClick(n?._id);
+                    }}
                     type="button"
                     className="btn btn-primary btn-sm"
                   >
@@ -213,7 +219,9 @@ function NotifyManage() {
                 </td>
                 <td>
                   <button
-                    onClick={() => { handleDeleteBtnClick(n?._id) }}
+                    onClick={() => {
+                      handleDeleteBtnClick(n?._id);
+                    }}
                     type="button"
                     className="btn btn-danger btn-sm"
                   >
@@ -270,9 +278,22 @@ function NotifyManage() {
             }}
           />
         </div>
-        <div className="d-flex justify-content-end gap-2">
-          <button className="btn btn-danger px-5" onClick={() => {closeModal(); removeState()}}>Hủy</button>
-          <button className="btn btn-primary px-5" onClick={handleSaveBtnClick}>Lưu</button>
+        <div
+          className="d-flex justify-content-end gap-2"
+          style={{ position: "absolute", top: "20px", right: "20px" }}
+        >
+          <button
+            className="btn btn-danger px-5"
+            onClick={() => {
+              closeModal();
+              removeState();
+            }}
+          >
+            Hủy
+          </button>
+          <button className="btn btn-primary px-5" onClick={handleSaveBtnClick}>
+            Lưu
+          </button>
         </div>
       </Modal>
     </div>

@@ -248,3 +248,10 @@ button {
     display: block;
   }
 }
+
+.styles-module_event__28gBZ {
+  background-color: var(--primary-color);
+}
+.time-table-body {
+  background-image: linear-gradient(rgb(191, 229, 255) 50%, rgba(162, 213, 255, 0.797) 50%);
+}
