@@ -278,3 +278,25 @@ export const getTimeScheduleAPI = async (userId, semesterId, token) => {
   );
   return response.data;
 };
+
+//metadata
+
+export const getMetatdataAPI = async (token) => {
+  const response = await axios.get(`${API_ROOT}/v1/course-regis/metadata/config`,
+  {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  }
+  );
+  return response.data;
+};
+
+export const updateMetadataAPI = async (data, token) => {
+  const response = await axios.put(`${API_ROOT}/v1/course-regis/metadata/config`, data, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};

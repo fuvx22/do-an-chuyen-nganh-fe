@@ -1,17 +1,16 @@
-import { React, useState, useEffect, useContext } from "react";
+import { React, useState, useEffect, useContext, useRef } from "react";
 import Navbar from "../components/Navbar";
 import TimeTable from "react-timetable-events";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
-import { fetchSemestersAPI, getTimeScheduleAPI } from "../apis";
-import metadata from "../utils/metadata.json";
+import { fetchSemestersAPI, getTimeScheduleAPI, getMetatdataAPI } from "../apis";
 
 function ScheduleTable() {
   const hourInterval = {
     from: 7,
     to: 18,
   };
-  const [loadedMetatata] = metadata;
+  const metadata = useRef(null);
   const [schedule, setSchedule] = useState({});
   const { userData } = useContext(UserContext);
   const [semseters, setSemesters] = useState([]);
@@ -27,6 +26,11 @@ function ScheduleTable() {
     fetchSemestersAPI(token).then((data) => {
       setSemesters(data);
     });
+
+    getMetatdataAPI(token).then((data) => {
+      metadata.current = data;
+    });
+
   }, []);
 
   const handleLoadSchedule = (semesterId) => {
@@ -39,7 +43,7 @@ function ScheduleTable() {
     if (selectedSemester) {
       handleLoadSchedule(selectedSemester);
     } else {
-      handleLoadSchedule(loadedMetatata.currentSemesterId);
+      handleLoadSchedule(metadata.current?.currentSemesterId);
     }
   }, [selectedSemester, userData]);
 
@@ -51,7 +55,7 @@ function ScheduleTable() {
         <select
           className="form-select form-select-sm"
           aria-label=".form-select-sm example"
-          defaultValue={loadedMetatata?.currentSemesterId}
+          defaultValue={metadata.current?.currentSemesterId}
           onChange={(e) => setSelectedSemester(e.target.value)}
         >
           {semseters.map((semester) => (

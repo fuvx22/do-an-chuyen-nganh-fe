@@ -9,12 +9,12 @@ import {
   getCourseRegisByUserIdAPI,
   deleteCourseRegisAPI,
   fetchSemesterByIdAPI,
+  getMetatdataAPI,
 } from "../apis";
 import { toast } from "react-toastify";
-import metadata from "../utils/metadata.json";
 
 function CourseRegistration() {
-  const [loadedMetatata] = metadata;
+  const metadata = useRef();
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   const [courseSchedules, setCourseSchedules] = useState([]);
@@ -23,13 +23,13 @@ function CourseRegistration() {
   const [selectedMajor, setSelectedMajor] = useState("");
   const [findCourse, setFindCourse] = useState("");
   const [filtedcourseSchedules, setFiltedcourseSchedules] = useState([]);
-  let majors = useRef([]);
+  const [majors, setMajors] = useState([]); 
   let historyCourseRegis = useRef([]);
   let currentSemester = useRef({});
   const token = JSON.parse(localStorage.getItem("user-token"));
-  const currentSemesterId = loadedMetatata.currentSemesterId;
+  const [currentSemesterId, setCurrentSemesterId] = useState(metadata.current?.currentSemesterId);
   const [isEnable, setIsEnable] = useState(
-    loadedMetatata.isEnableCourseRegistration == "true"
+    metadata.current?.isEnableCourseRegistration
   );
 
   useEffect(() => {
@@ -37,18 +37,28 @@ function CourseRegistration() {
       navigate("/");
     }
 
+    getMetatdataAPI(token).then((data) => {
+      metadata.current = data;
+      setIsEnable(data.isEnableCourseRegistration);
+      setCurrentSemesterId(data.currentSemesterId);
+    });
+
     fetchCourseSchedulesBySemesterAPI(token, currentSemesterId).then((data) => {
       setCourseSchedules(data);
     });
 
     fetchMajorsAPI(token).then((data) => {
-      majors.current = data;
+      setMajors(data);
     });
 
-    fetchSemesterByIdAPI(currentSemesterId).then((data) => {
-      currentSemester.current = data;
-    });
-  }, []);
+    if (currentSemesterId) {
+      fetchSemesterByIdAPI(currentSemesterId).then((data) => {
+        currentSemester.current = data;
+      });
+    }
+
+
+  }, [currentSemesterId]);
 
   const fetchData = () => {
     getCourseRegisByUserIdAPI(userData?._id, token).then((data) => {
@@ -262,7 +272,7 @@ function CourseRegistration() {
               }}
             >
               <option value="">Lọc học phần theo ngành</option>
-              {majors.current.map((major) => (
+              {majors.map((major) => (
                 <option value={major?._id} key={major?._id}>
                   {major?.name}
                 </option>

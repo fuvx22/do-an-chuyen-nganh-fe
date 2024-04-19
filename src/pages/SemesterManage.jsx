@@ -2,20 +2,26 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import {
-    fetchUserAPI,
-    fetchSemestersAPI,
-    createNewSemesterAPI,
-    editSemesterAPI,
-    deleteSemesterAPI,
+  fetchUserAPI,
+  fetchSemestersAPI,
+  createNewSemesterAPI,
+  editSemesterAPI,
+  deleteSemesterAPI,
+  getMetatdataAPI,
+  updateMetadataAPI,
 } from "../apis";
 import { semesterErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
+import fs from "fs";
+
 
 let indexToEdit = -1;
 
 function SemesterManage() {
   const [semesters, setSemesters] = useState([]);
+  const [semesterId, setSemesterId] = useState(undefined);
+  const [isEnable, setIsEnable] = useState(undefined);
   const { userData } = useContext(UserContext);
   const token = JSON.parse(localStorage.getItem("user-token"));
   useEffect(() => {
@@ -36,13 +42,18 @@ function SemesterManage() {
     fetchData();
   }, []);
 
-  
+  useEffect(() => {
+    getMetatdataAPI(token).then((data) => {
+      setSemesterId(data.currentSemesterId);
+      setIsEnable(data.isEnableCourseRegistration);
+    });
+  },[]);
 
   const navigate = useNavigate();
   const [semesterName, setSemesterName] = useState("");
   const [startSemesterDate, setStartSemesterDate] = useState(new Date());
   const [endSemesterDate, setEndSemesterDate] = useState(new Date());
-  
+
   const [isEdit, setIsEdit] = useState(false);
   const semesterIdRef = useRef(null);
 
@@ -84,7 +95,6 @@ function SemesterManage() {
 
   const confirmEdit = async () => {
     if (semesterName && startSemesterDate && endSemesterDate) {
-      
       semesters[indexToEdit].semesterName = semesterName;
       semesters[indexToEdit].startSemesterDate = startSemesterDate;
       semesters[indexToEdit].endSemesterDate = endSemesterDate;
@@ -107,7 +117,7 @@ function SemesterManage() {
       });
       semesterIdRef.current.focus();
     }
-  }
+  };
 
   const handleDeleteSemester = async (index) => {
     try {
@@ -124,23 +134,61 @@ function SemesterManage() {
   };
 
   const cancelActivity = () => {
-    
     setSemesterName("");
     setStartSemesterDate("");
     setEndSemesterDate("");
-    setIsEdit(false)
+    setIsEdit(false);
     indexToEdit = -1;
   };
 
   const handleChangeStartDate = (e) => {
     const selectedDate = new Date(e.target.value);
-    setStartSemesterDate(selectedDate.toISOString().split('T')[0]);
+    setStartSemesterDate(selectedDate.toISOString().split("T")[0]);
   };
+
+  const handleEnableCourseRegistration = async () => {
+    if (semesterId) {
+      try {
+        const newMetadata = {
+          currentSemesterId: semesterId,
+          isEnableCourseRegistration: isEnable,
+        };
+        await updateMetadataAPI(newMetadata, token);
+        toast.success("Áp dụng thành công"); 
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi");
+        console.log(error);
+      }
+    }
+  }
+
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
       <Navbar user={userData} />
-
+      <div className="mt-3 d-flex gap-3 align-items-center">
+        <h3>Mở cho phép đăng kí:</h3>
+        <div className="col-sm-4">
+          <select
+            className="form-select form-select-sm"
+            aria-label=".form-select-sm example"
+            onChange={(e) => {setSemesterId(e.target.value)}}
+            value={semesterId}
+          > 
+            {semesters.map((semester) => (
+              <option key={semester._id} value={semester._id}>
+                {semester.semesterName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <b>mở đăng kí: </b>
+        <input className="p" type="checkbox" checked={isEnable} onChange={(e) => setIsEnable(e.target.checked)}/>
+        <button className="btn btn-primary" onClick={handleEnableCourseRegistration}>Áp dụng</button>
+      </div>
+      <div className="mt-3">
+        <h3>Quản lý học kì</h3>
+      </div>
       <div className="control-container my-3 d-flex flex-wrap gap-2">
         <div className="control-item">
           <label htmlFor="majorName" className="form-label">
@@ -162,14 +210,13 @@ function SemesterManage() {
           </label>
           <input
             value={startSemesterDate}
-            
             onChange={(e) => {
               setStartSemesterDate(e.target.value);
             }}
-  //           value={new Date(startSemesterDate).toISOString().split('T')[0]}
-  //           onChange={(e) => {
-  //   setStartSemesterDate(new Date(e.target.value).toISOString().split('T')[0]);
-  // }}
+            //           value={new Date(startSemesterDate).toISOString().split('T')[0]}
+            //           onChange={(e) => {
+            //   setStartSemesterDate(new Date(e.target.value).toISOString().split('T')[0]);
+            // }}
             type="date"
             className="form-control"
             id="startSemesterDate"
@@ -223,10 +270,13 @@ function SemesterManage() {
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{c.semesterName}</td>
-                <td>{new Date(c.startSemesterDate).toLocaleDateString("en-GB")}</td>
-                <td>{new Date(c.endSemesterDate).toLocaleDateString("en-GB")}</td>
-                
-                
+                <td>
+                  {new Date(c.startSemesterDate).toLocaleDateString("en-GB")}
+                </td>
+                <td>
+                  {new Date(c.endSemesterDate).toLocaleDateString("en-GB")}
+                </td>
+
                 <td>
                   <button
                     onClick={() => handleEditSemester(index)}
