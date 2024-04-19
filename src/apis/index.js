@@ -265,3 +265,16 @@ export const deleteCourseRegisAPI = async (data, token) => {
   });
   return response.data;
 };
+
+// Schedule
+export const getTimeScheduleAPI = async (userId, semesterId, token) => {
+  const response = await axios.get(
+    `${API_ROOT}/v1/course-regis/time/${userId}/${semesterId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
+  return response.data;
+};
