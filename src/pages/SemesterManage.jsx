@@ -13,8 +13,6 @@ import {
 import { semesterErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
-import fs from "fs";
-
 
 let indexToEdit = -1;
 
@@ -47,7 +45,7 @@ function SemesterManage() {
       setSemesterId(data.currentSemesterId);
       setIsEnable(data.isEnableCourseRegistration);
     });
-  },[]);
+  }, []);
 
   const navigate = useNavigate();
   const [semesterName, setSemesterName] = useState("");
@@ -71,6 +69,7 @@ function SemesterManage() {
         cancelActivity();
         toast.success("Thêm học kỳ thành công");
       } catch (error) {
+        console.log(error);
         toast.error(semesterErrorClassify(error), {
           position: "top-center",
           theme: "colored",
@@ -89,7 +88,7 @@ function SemesterManage() {
     setIsEdit(true);
     indexToEdit = index;
     setSemesterName(semesters[index].semesterName);
-    setStartSemesterDate(semesters[index].startSemesterDate);
+    setStartSemesterDate(semesters[index].startmesterDate);
     setEndSemesterDate(semesters[index].endSemesterDate);
   };
 
@@ -118,6 +117,10 @@ function SemesterManage() {
       semesterIdRef.current.focus();
     }
   };
+
+  useEffect(() => {
+    console.log(startSemesterDate, endSemesterDate);
+  }, [startSemesterDate, endSemesterDate]);
 
   const handleDeleteSemester = async (index) => {
     try {
@@ -154,14 +157,13 @@ function SemesterManage() {
           isEnableCourseRegistration: isEnable,
         };
         await updateMetadataAPI(newMetadata, token);
-        toast.success("Áp dụng thành công"); 
+        toast.success("Áp dụng thành công");
       } catch (error) {
         toast.error("Đã xảy ra lỗi");
         console.log(error);
       }
     }
-  }
-
+  };
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -172,9 +174,11 @@ function SemesterManage() {
           <select
             className="form-select form-select-sm"
             aria-label=".form-select-sm example"
-            onChange={(e) => {setSemesterId(e.target.value)}}
+            onChange={(e) => {
+              setSemesterId(e.target.value);
+            }}
             value={semesterId}
-          > 
+          >
             {semesters.map((semester) => (
               <option key={semester._id} value={semester._id}>
                 {semester.semesterName}
@@ -183,8 +187,18 @@ function SemesterManage() {
           </select>
         </div>
         <b>mở đăng kí: </b>
-        <input className="p" type="checkbox" checked={isEnable} onChange={(e) => setIsEnable(e.target.checked)}/>
-        <button className="btn btn-primary" onClick={handleEnableCourseRegistration}>Áp dụng</button>
+        <input
+          className="p"
+          type="checkbox"
+          checked={isEnable}
+          onChange={(e) => setIsEnable(e.target.checked)}
+        />
+        <button
+          className="btn btn-primary"
+          onClick={handleEnableCourseRegistration}
+        >
+          Áp dụng
+        </button>
       </div>
       <div className="mt-3">
         <h3>Quản lý học kì</h3>

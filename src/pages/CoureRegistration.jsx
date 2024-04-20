@@ -24,6 +24,8 @@ function CourseRegistration() {
   const [findCourse, setFindCourse] = useState("");
   const [filtedcourseSchedules, setFiltedcourseSchedules] = useState([]);
   const [majors, setMajors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   let historyCourseRegis = useRef([]);
   let currentSemester = useRef({});
   const token = JSON.parse(localStorage.getItem("user-token"));
@@ -58,9 +60,7 @@ function CourseRegistration() {
         currentSemester.current = data;
       });
     }
-  }, [currentSemesterId]);
 
-  const fetchData = async () => {
     getCourseRegisByUserIdAPI(userData?._id, token).then((data) => {
       const currentSemesterCourseRegis = data.filter((cs) => {
         return cs.semesterId === currentSemesterId;
@@ -68,13 +68,23 @@ function CourseRegistration() {
       historyCourseRegis.current = data.filter((cs) => {
         return cs.semesterId !== currentSemesterId;
       });
+      setSelectedCourses((prevCourses) => [
+        ...prevCourses,
+        ...currentSemesterCourseRegis,
+      ]);
+    });
+
+    setIsLoading(false);
+  }, [currentSemesterId, userData]);
+
+  const fetchData = async () => {
+    getCourseRegisByUserIdAPI(userData?._id, token).then((data) => {
+      const currentSemesterCourseRegis = data.filter((cs) => {
+        return cs.semesterId === currentSemesterId;
+      });
       setSelectedCourses(currentSemesterCourseRegis);
     });
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [userData, currentSemesterId]);
 
   useEffect(() => {
     if (selectedMajor == "" && findCourse == "") {
@@ -143,18 +153,21 @@ function CourseRegistration() {
       const newTotalCredits = totalCredits + selectedCS.course.courseCredits;
 
       // Ràng buộc ngành học
-      // if(selectedCS.course.majorId !== userData.majorId){
-      //   toast.error("Môn học không thuộc ngành học", {
-      //     position: "top-center",
-      //   });
-      //   e.target.checked = false;
-      //   return;
-      // }
+      if (selectedCS.course.majorId !== userData.majorId) {
+        toast.error("Môn học không thuộc ngành học", {
+          position: "top-center",
+        });
+        e.target.checked = false;
+        return;
+      }
 
       if (
-        selectedCourses.some((cs) => cs.course._id === selectedCS.course._id)
+        selectedCourses.some((cs) => cs.course._id === selectedCS.course._id) ||
+        historyCourseRegis.current.some(
+          (cs) => cs.course._id === selectedCS.course._id
+        )
       ) {
-        toast.error("Môn học đã được chọn", {
+        toast.error("Môn học đã được chọn/ học", {
           position: "top-center",
         });
         e.target.checked = false;
@@ -237,7 +250,7 @@ function CourseRegistration() {
 
         fetchData();
       } catch (error) {
-        toast.error("Số lượng đăng kí đã hết", { position: "top-center" });
+        toast.error(error.response.data.message, { position: "top-center" });
       }
     } else {
       selectedCourses.find((cs) => {
@@ -248,6 +261,23 @@ function CourseRegistration() {
       });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{ height: "100vh" }}
+        className="d-flex justify-content-center align-items-center"
+      >
+        <div
+          className="spinner-border text-primary"
+          style={{ width: "4.5rem", height: "4.5rem" }}
+          role="status"
+        >
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -376,11 +406,9 @@ function CourseRegistration() {
                 <th scope="col">Thời khóa biểu</th>
               </tr>
             </thead>
-            {!selectedCourses ? (
-              <h1>Loading</h1>
-            ) : (
-              <tbody className="table-bordered">
-                {selectedCourses.map((cs, idx) => (
+            <tbody className="table-bordered">
+              {selectedCourses &&
+                selectedCourses.map((cs, idx) => (
                   <tr key={idx}>
                     <td className="text-center">
                       <button
@@ -406,8 +434,7 @@ function CourseRegistration() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            )}
+            </tbody>
           </table>
         </div>
       </div>

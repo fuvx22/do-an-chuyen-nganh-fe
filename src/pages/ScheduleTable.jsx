@@ -3,7 +3,11 @@ import Navbar from "../components/Navbar";
 import TimeTable from "react-timetable-events";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
-import { fetchSemestersAPI, getTimeScheduleAPI, getMetatdataAPI } from "../apis";
+import {
+  fetchSemestersAPI,
+  getTimeScheduleAPI,
+  getMetatdataAPI,
+} from "../apis";
 
 function ScheduleTable() {
   const hourInterval = {
@@ -30,7 +34,6 @@ function ScheduleTable() {
     getMetatdataAPI(token).then((data) => {
       metadata.current = data;
     });
-
   }, []);
 
   const handleLoadSchedule = (semesterId) => {
@@ -40,12 +43,12 @@ function ScheduleTable() {
   };
 
   useEffect(() => {
-    if (selectedSemester) {
+    if (selectedSemester && userData?._id) {
       handleLoadSchedule(selectedSemester);
     } else {
       handleLoadSchedule(metadata.current?.currentSemesterId);
     }
-  }, [selectedSemester, userData]);
+  }, [userData, selectedSemester]);
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
