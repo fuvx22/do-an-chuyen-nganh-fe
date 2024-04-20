@@ -1,61 +1,77 @@
-import { React } from "react";
+import { React, useState, useEffect, useContext, useRef } from "react";
 import Navbar from "../components/Navbar";
 import TimeTable from "react-timetable-events";
+import { UserContext } from "../context/userContext";
+import { useNavigate } from "react-router-dom";
+import { fetchSemestersAPI, getTimeScheduleAPI, getMetatdataAPI } from "../apis";
 
 function ScheduleTable() {
   const hourInterval = {
     from: 7,
     to: 18,
   };
+  const metadata = useRef(null);
+  const [schedule, setSchedule] = useState({});
+  const { userData } = useContext(UserContext);
+  const [semseters, setSemesters] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState(null); // [semesterId, setSemesterId
+  const navigate = useNavigate();
+  const token = JSON.parse(localStorage.getItem("user-token"));
 
-  let scheduleEvents = {
-    monday: [
-      {
-        id: 1,
-        name: "Custom Event 1",
-        type: "custom",
-        startTime: new Date("2018-02-23T11:30:00"),
-        endTime: new Date("2018-02-23T13:30:00"),
-      },
-      {
-        id: 2,
-        name: "Custom Event 2",
-        type: "custom",
-        startTime: new Date("2018-02-23T15:30:00"),
-        endTime: new Date("2018-02-23T18:00:00"),
-      },
-    ],
-    tuesday: [],
-    wednesday: [],
-    thursday: [],
-    friday: [],
-    saturday: [],
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+
+    fetchSemestersAPI(token).then((data) => {
+      setSemesters(data);
+    });
+
+    getMetatdataAPI(token).then((data) => {
+      metadata.current = data;
+    });
+
+  }, []);
+
+  const handleLoadSchedule = (semesterId) => {
+    getTimeScheduleAPI(userData?._id, semesterId, token).then((data) => {
+      setSchedule(data);
+    });
   };
+
+  useEffect(() => {
+    if (selectedSemester) {
+      handleLoadSchedule(selectedSemester);
+    } else {
+      handleLoadSchedule(metadata.current?.currentSemesterId);
+    }
+  }, [selectedSemester, userData]);
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
-      <Navbar />
+      <Navbar user={userData} />
 
       <div className="col-sm-6 mt-3">
         <select
           className="form-select form-select-sm"
           aria-label=".form-select-sm example"
-          defaultValue={"2023-2024-2"}
+          defaultValue={metadata.current?.currentSemesterId}
+          onChange={(e) => setSelectedSemester(e.target.value)}
         >
-          <option value="2023-2024-2"> Học kì 2 năm học 2023-2024</option>
-          <option value="2023-2024-1">Học kì 1 năm học 2023-2024</option>
-          <option value="2022-2023-2">Học kì 2 năm học 2022-2023</option>
-          <option value="2022-2023-1">Học kì 1 năm học 2022-2023</option>
-          <option value="2021-2022-2">Học kì 2 năm học 2021-2022</option>
-          <option value="2021-2022-1">Học kì 1 năm học 2021-2022</option>
+          {semseters.map((semester) => (
+            <option key={semester._id} value={semester._id}>
+              {semester.semesterName}
+            </option>
+          ))}
         </select>
       </div>
 
-      <div className="time-table-container mt-3 overflow-auto">
+      <div className="time-table-container mt-3">
         <TimeTable
-          events={scheduleEvents}
+          events={schedule}
           hoursInterval={hourInterval}
-          style={{ height: "100%", minWidth: "500px" }}
+          style={{ height: "125%", minWidth: "500px" }}
+          bodyAttributes={{ className: "time-table-body" }}
         />
       </div>
     </div>

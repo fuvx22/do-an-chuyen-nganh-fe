@@ -109,6 +109,8 @@ function NotifyManage() {
 
   const handleSaveBtnClick = async () => {
     current.authorId = userData._id;
+    current.title = current.title.trim();
+    current.content = current.content.trim();
     try {
       if (status === "Thêm mới") {
         delete current._id;
@@ -126,7 +128,6 @@ function NotifyManage() {
       removeState();
     } catch (error) {
       toast.error("Thông tin không hợp lệ!");
-      console.error(error);
     }
   };
 
@@ -200,7 +201,9 @@ function NotifyManage() {
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{n?.title}</td>
-                <td style={{ maxWidth: "400px" }}>{n?.content}</td>
+                <td className="truncate" style={{ maxWidth: "400px" }}>
+                  {n?.content}
+                </td>
                 <td>{n.author ? n?.author[0]?.name : userData.name}</td>
                 <td>{new Date(n?.createAt).toLocaleDateString()}</td>
                 <td>
@@ -275,7 +278,10 @@ function NotifyManage() {
             }}
           />
         </div>
-        <div className="d-flex justify-content-end gap-2">
+        <div
+          className="d-flex justify-content-end gap-2"
+          style={{ position: "absolute", top: "20px", right: "20px" }}
+        >
           <button
             className="btn btn-danger px-5"
             onClick={() => {

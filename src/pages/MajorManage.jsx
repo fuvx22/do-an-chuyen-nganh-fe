@@ -8,16 +8,36 @@ import {
   editMajorAPI,
   deleteMajorAPI,
 } from "../apis";
-import { courseErrorClassify, majorErrorClassify } from "../utils/validator";
+import { majorErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
 
 let indexToEdit = -1;
+
+const customStyles = {
+  content: {
+    width: "30%",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
 
 function MajorManage() {
   const [majors, setMajors] = useState([]);
   const { userData } = useContext(UserContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedMajor, setSelectedMajor] = useState(null)
   const token = JSON.parse(localStorage.getItem("user-token"));
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+
   useEffect(() => {
     if (!token) {
       navigate("/");
@@ -87,24 +107,20 @@ function MajorManage() {
     }
   };
 
-  const handleEditMajor = (index) => {
-    setIsEdit(true);
-    indexToEdit = index;
-    setMajorId(majors[index].majorId);
-    setMajorName(majors[index].name);
-    setMajorType(majors[index].type);
-  };
 
   const confirmEdit = async () => {
-    if (majorId && majorName && majorType) {
-      majors[indexToEdit].majorId = majorId;
-      majors[indexToEdit].name = majorName;
-      majors[indexToEdit].type = majorType;
-
+    const { majorId, name, type} = selectedMajor;
+    if (
+      majorId != "" ||
+      name != "" ||
+      type != "" 
+    ) {
       try {
-        await editMajorAPI(majors[indexToEdit]);
+        await editMajorAPI(selectedMajor);
+        const updatedMajor = await fetchMajorsAPI(token);
+        setMajors(updatedMajor);
         toast.success("Cập nhật khoa thành công");
-        cancelActivity();
+        closeModal();
       } catch (error) {
         toast.error(majorErrorClassify(error), {
           position: "top-center",
@@ -120,6 +136,13 @@ function MajorManage() {
       majorIdRef.current.focus();
     }
   };
+
+  const handleEditModal = async (major) => {
+    setSelectedMajor(major)
+    setIsOpen(true);
+  };
+
+  
 
   const handleDeleteMajor = async (index) => {
     try {
@@ -201,9 +224,9 @@ function MajorManage() {
         <div className="control-item d-flex gap-2">
           <button
             className="btn btn-primary"
-            onClick={() => (isEdit ? confirmEdit() : handleAddMajor())}
+            onClick={handleAddMajor}
           >
-            {!isEdit ? "Thêm khoa mới" : "Cập nhật khoa"}
+            Thêm khoa mới
           </button>
           <button
             className="btn btn-outline-danger"
@@ -227,34 +250,122 @@ function MajorManage() {
             </tr>
           </thead>
           <tbody>
-            {majors.map((c, index) => (
+            {majors.map((major, index) => (
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
-                <td>{c.majorId}</td>
-                <td>{c.name}</td>
-                <td>{types.find((m) => m._id == c.type)?.name}</td>
-                <td>
+                <td>{major.majorId}</td>
+                <td>{major.name}</td>
+                <td>{types.find((m) => m._id == major.type)?.name}</td>
+  
+                <td style={{ minWidth: "110px", textAlign: "right" }}>
                   <button
-                    onClick={() => handleEditMajor(index)}
-                    type="button"
-                    className="btn btn-primary btn-sm"
+                    onClick={() => {
+                      handleEditModal(major);
+                    }}
+                    className="btn btn-primary"
                   >
                     <i className="fas fa-edit"></i>
                   </button>
-                </td>
-                <td>
                   <button
-                    onClick={() => handleDeleteMajor(index)}
-                    type="button"
-                    className="btn btn-danger btn-sm"
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                      onClick={() => handleDeleteMajor(index)}
+                      className="btn btn-danger mx-1"
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
                 </td>
+                <td></td>
               </tr>
             ))}
           </tbody>
         </table>
+
+
+        <Modal
+          isOpen={isOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <div className="modal-header">
+            <h4 className="modal-title">Chỉnh sửa </h4>
+          </div>
+
+          <div className="modal-body">
+              <form>
+              <div className="mb-3">
+                <label htmlFor="majorId" className="form-label">
+                  Mã khoa
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="majorId"
+                  value={selectedMajor?.majorId || ""}
+                  readOnly
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Tên khoa
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  value={selectedMajor?.name || ""}
+                  onChange={(e) =>
+                    setSelectedMajor({
+                      ...selectedMajor,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="type" className="form-label">
+                  Nhóm ngành
+                </label>
+                <select
+                  className="form-select"
+                  id="type"
+                  value={selectedMajor?.type || ""}
+                  onChange={(e) =>
+                    setSelectedMajor({
+                      ...selectedMajor,
+                      type: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Chọn nhóm ngành</option>
+                  {typesData.map((type) => (
+                    <option key={type._id} value={type._id}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              </form>
+          </div>
+
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={closeModal}
+            >
+              Đóng
+            </button>
+            <button
+              type="button"
+              onClick={confirmEdit}
+              className="btn btn-primary mx-1"
+            >
+              Lưu thay đổi
+            </button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

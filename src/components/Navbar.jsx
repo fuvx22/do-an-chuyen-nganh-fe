@@ -16,9 +16,9 @@ function Navbar(props) {
     localStorage.removeItem("user-token");
     navigate("/");
   };
-  const handleCourseManger = () => {
+  const redirect = (url) => {
     if (token) {
-      navigate("/course-manage");
+      navigate(url);
     } else {
       navigate("/");
     }
@@ -47,6 +47,18 @@ function Navbar(props) {
   const handleUsersManager = () => {
     if (token) {
       navigate("/user-manage");
+
+  const handleSemesterManager = () => {
+    if (token) {
+      navigate("/semester-manage");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleCourseScheduleManager = () => {
+    if (token) {
+      navigate("/course-schedule-manage");
+
     } else {
       navigate("/");
     }
@@ -96,7 +108,7 @@ function Navbar(props) {
           alt=""
         />
         <ul className="dropdown-menu dropdown-menu-right overflow-hidden py-0 end-0 top-100">
-          <li className="dropdown-item" onClick={handleCheckInfo}>
+          <li className="dropdown-item" onClick={() => redirect("/userBoard")}>
             Thông tin cá nhân
           </li>
           <div className="dropdown-divider m-0"></div>
@@ -134,33 +146,72 @@ function Navbar(props) {
               <li className="side-menu-option" onClick={handleUsersManager}>
                 Quản lí Tài Khoản
               </li>
-
-              <li
-                className="side-menu-option"
-                onClick={handleInstructorManager}
-              >
-                Quản lí Giảng Viên
-              </li>
-
-              <li className="side-menu-option" onClick={handleCourseManger}>
-                Quản lí môn học
-              </li>
-
-              <li className="side-menu-option" onClick={handleMajorManager}>
-                Quản lí khoa
-              </li>
-
-              <li className="side-menu-option" onClick={handleNotifyManager}>
-                Quản lí thông báo
-              </li>
             </>
           ) : null}
           <li className="side-menu-option" onClick={handleCheckInfo}>
-            Thông tin cá nhân
+              Thông tin cá nhân
           </li>
-          <li className="side-menu-option">Đăng ký học phần</li>
-          <li className="side-menu-option">Xem thời khóa biểu tuần</li>
-          <li className="side-menu-option">Xem thời khóa biểu học kì</li>
+          {role === "admin" && (
+            <li
+              className="side-menu-option"
+              onClick={() => redirect("/instructor-manage")}
+            >
+              Quản lí Giảng Viên
+            </li>
+          )}
+          {role === "admin" && (
+            <li
+              className="side-menu-option"
+              onClick={() => redirect("/course-manage")}
+            >
+              Quản lí môn học
+            </li>
+          )}
+          {role === "admin" && (
+            <li
+              className="side-menu-option"
+              onClick={handleCourseScheduleManager}
+            >
+              Quản lí đăng ký môn học
+            </li>
+          )}
+          {role === "admin" && (
+            <li
+              className="side-menu-option"
+              onClick={() => redirect("/major-manage")}
+            >
+              Quản lí khoa
+            </li>
+          )}
+          {role === "admin" && (
+            <li className="side-menu-option" onClick={handleSemesterManager}>
+              Quản lí học kỳ
+            </li>
+          )}
+          {role === "admin" && (
+            <li
+              className="side-menu-option"
+              onClick={() => redirect("/notify-manage")}
+            >
+              Quản lí thông báo
+            </li>
+          )}
+          <li
+            className="side-menu-option"
+            onClick={() => redirect("/userBoard")}
+          >  
+          <li
+            className="side-menu-option"
+            onClick={() => redirect("/course-registration")}
+          >
+            Đăng ký học phần
+          </li>
+          <li
+            className="side-menu-option"
+            onClick={() => redirect("/schedule")}
+          >
+            Xem thời khóa biểu
+          </li>
         </ul>
       </div>
     </div>

@@ -41,7 +41,11 @@ function Notify() {
               </h6>
             </div>
             <div
-              className="mt-5"
+              className="mt-5 notify-content"
+              style={{
+                fontSize: "1.2rem",
+                lineHeight: "1.7",
+              }}
               dangerouslySetInnerHTML={{ __html: notify?.content }}
             ></div>
           </div>

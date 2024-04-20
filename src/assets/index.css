@@ -128,6 +128,7 @@ button {
   left: 0;
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
+  z-index: 100;
 
   & ul {
     list-style: nones;
@@ -217,4 +218,40 @@ button {
 
 .footer {
   background-color: var(--primary-color);
+}
+
+.notify-content > img {
+  max-width: 100%;
+}
+
+.course-regis-control:disabled {
+  color: #999;
+  background-color: #ddd;
+  cursor: not-allowed !important;
+  position: relative;
+
+  &::after {
+    content: 'Ngoài thời gian đăng kí';
+    position: absolute;
+    background-color: #ddd;
+    color: #707070;
+    border-radius: 5px;
+    min-width: 180px;
+    max-height: 30px;
+    z-index: 10;
+    top: 15px;
+    display: none;
+    padding: 0 5px;
+  }
+
+  &:hover::after {
+    display: block;
+  }
+}
+
+.styles-module_event__28gBZ {
+  background-color: var(--primary-color);
+}
+.time-table-body {
+  background-image: linear-gradient(rgb(191, 229, 255) 50%, rgba(162, 213, 255, 0.797) 50%);
 }
