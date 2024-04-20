@@ -36,7 +36,6 @@ export const editCourseAPI = async (data) => {
   const response = await axios.put(`${API_ROOT}/v1/course/edit`, data);
   return response.data;
 };
-
 export const deleteCourseAPI = async (data) => {
   const response = await axios.delete(`${API_ROOT}/v1/course/delete`, {
     data: data,
@@ -184,7 +183,6 @@ export const deleteInstructor = async (id, tọken) => {
   );
   return response;
 };
-
 //Notify
 
 export const fetchNotifiesAPI = async (token) => {
@@ -224,6 +222,25 @@ export const deleteNotifyAPI = async (data) => {
   return response.data;
 };
 
+export const addUser = async (userData, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/user/`, userData, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const getImageUser = async (token, dataimg) => {
+  const response = await axios.get(`${API_ROOT}/v1/user/getimg/${dataimg}`, {
+    responseType: "blob",
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+    return response;
+};
+
 // Course Schedule
 export const fetchCourseSchedulesBySemesterAPI = async (token, semesterId) => {
   const response = await axios.get(
@@ -246,7 +263,22 @@ export const createNewCourseRegisAPI = async (data, token) => {
   });
   return response.data;
 };
-
+export const getAllUser = async (token, role) => {
+  const response = await axios.get(`${API_ROOT}/v1/user/role/${role}`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
+};
+export const deleteUserById = async (token, id) => {
+  const response = await axios.delete(`${API_ROOT}/v1/user/delete/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
+};
 export const getCourseRegisByUserIdAPI = async (userId, token) => {
   const response = await axios.get(`${API_ROOT}/v1/course-regis/${userId}`, {
     headers: {
@@ -254,6 +286,14 @@ export const getCourseRegisByUserIdAPI = async (userId, token) => {
     },
   });
   return response.data;
+};
+export const editUser = async (token, data) => {
+  const response = await axios.put(`${API_ROOT}/v1/user/update`, data, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
 };
 
 export const deleteCourseRegisAPI = async (data, token) => {
@@ -264,6 +304,13 @@ export const deleteCourseRegisAPI = async (data, token) => {
     },
   });
   return response.data;
+};
+export const changePassword = async (token, data, body) => {
+  // console.log(data);
+  const response = await axios.put(
+    `${API_ROOT}/v1/user/update-password/${data.userId}`,
+    body,
+  return response;
 };
 
 // Schedule

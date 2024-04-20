@@ -1,15 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import { fetchUserAPI, getImageUser } from "../apis";
+import { toast } from "react-toastify";
 function Navbar(props) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { role } = useContext(UserContext);
+  const { role, imageUser } = useContext(UserContext);
+  const [image, setImage] = useState(null);
   const token = JSON.parse(localStorage.getItem("user-token"));
   const handleOpenSideMenu = () => {
     setIsSideMenuOpen(!isSideMenuOpen);
   };
-
   const handleLogout = () => {
     localStorage.removeItem("user-token");
     navigate("/");
@@ -42,6 +44,10 @@ function Navbar(props) {
       navigate("/");
     }
   };
+  const handleUsersManager = () => {
+    if (token) {
+      navigate("/user-manage");
+
   const handleSemesterManager = () => {
     if (token) {
       navigate("/semester-manage");
@@ -52,6 +58,7 @@ function Navbar(props) {
   const handleCourseScheduleManager = () => {
     if (token) {
       navigate("/course-schedule-manage");
+
     } else {
       navigate("/");
     }
@@ -63,7 +70,22 @@ function Navbar(props) {
       navigate("/");
     }
   };
-
+  const handleChangPassword = () => {
+    if (token) {
+      navigate("/change-password");
+    } else {
+      navigate("/");
+    }
+  };
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      const response = await fetchUserAPI(token);
+      const responseImage = await getImageUser(token, response.data.image);
+      const imageURL = URL.createObjectURL(responseImage.data);
+      setImage(imageURL);
+    };
+    fetchUserImage();
+  }, []);
   return (
     <div className="my-navbar px-2">
       <button
@@ -82,12 +104,16 @@ function Navbar(props) {
         </span>
         <img
           className="navbar-user-img rounded-circle h-80"
-          src="https://picsum.photos/200/200"
+          src={imageUser ? imageUser : image}
           alt=""
         />
         <ul className="dropdown-menu dropdown-menu-right overflow-hidden py-0 end-0 top-100">
           <li className="dropdown-item" onClick={() => redirect("/userBoard")}>
             Thông tin cá nhân
+          </li>
+          <div className="dropdown-divider m-0"></div>
+          <li className="dropdown-item" onClick={handleChangPassword}>
+            Đổi mật khẩu
           </li>
           <div className="dropdown-divider m-0"></div>
           <li className="dropdown-item" onClick={handleLogout}>
@@ -114,6 +140,16 @@ function Navbar(props) {
             onClick={() => navigate("/dashBoard")}
           >
             Trang chủ
+          </li>
+          {role === "admin" || role === "major" ? (
+            <>
+              <li className="side-menu-option" onClick={handleUsersManager}>
+                Quản lí Tài Khoản
+              </li>
+            </>
+          ) : null}
+          <li className="side-menu-option" onClick={handleCheckInfo}>
+              Thông tin cá nhân
           </li>
           {role === "admin" && (
             <li
@@ -163,9 +199,7 @@ function Navbar(props) {
           <li
             className="side-menu-option"
             onClick={() => redirect("/userBoard")}
-          >
-            Thông tin cá nhân
-          </li>
+          >  
           <li
             className="side-menu-option"
             onClick={() => redirect("/course-registration")}

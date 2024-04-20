@@ -138,7 +138,7 @@ function NotifyManage() {
     }
     const fetchData = async () => {
       try {
-        if (userData?.role === "admin") {
+        if (userData?.role === "admin" || userData?.role === "major") {
           const notifies = await fetchNotifiesAPI(token);
           setNotifies(notifies);
         } else {

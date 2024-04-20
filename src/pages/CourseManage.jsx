@@ -28,7 +28,7 @@ function CourseManage() {
     const fetchData = async () => {
       try {
         const response = await fetchUserAPI(token);
-        if (response.data.role === "admin") {
+        if (response.data.role === "admin" || response.data.role === "major") {
           const data = await fetchCoursesAPI(token);
           const majorData = await fetchMajorsAPI(token);
           setCourses(data);
