@@ -117,7 +117,6 @@ export const deleteInstructor = async (id, tọken) => {
   );
   return response;
 };
-
 //Notify
 
 export const fetchNotifiesAPI = async (token) => {
@@ -139,7 +138,9 @@ export const createNewNotifyAPI = async (data, token) => {
 };
 
 export const findOneNotifyAPI = async (id) => {
-  const response = await axios.get(`${API_ROOT}/v1/notify/find`, {params: { id: id }});
+  const response = await axios.get(`${API_ROOT}/v1/notify/find`, {
+    params: { id: id },
+  });
   return response.data;
 };
 
@@ -153,4 +154,59 @@ export const deleteNotifyAPI = async (data) => {
     data: data,
   });
   return response.data;
+};
+export const addUser = async (userData, token) => {
+  const response = await axios.post(`${API_ROOT}/v1/user/`, userData, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response.data;
+};
+
+export const getImageUser = async (token, dataimg) => {
+  const response = await axios.get(`${API_ROOT}/v1/user/getimg/${dataimg}`, {
+    responseType: "blob",
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
+};
+export const getAllUser = async (token, role) => {
+  const response = await axios.get(`${API_ROOT}/v1/user/role/${role}`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
+};
+export const deleteUserById = async (token, id) => {
+  const response = await axios.delete(`${API_ROOT}/v1/user/delete/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
+};
+export const editUser = async (token, data) => {
+  const response = await axios.put(`${API_ROOT}/v1/user/update`, data, {
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+  return response;
+};
+export const changePassword = async (token, data, body) => {
+  // console.log(data);
+  const response = await axios.put(
+    `${API_ROOT}/v1/user/update-password/${data.userId}`,
+    body,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
+  return response;
 };

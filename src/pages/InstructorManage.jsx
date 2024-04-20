@@ -44,7 +44,7 @@ const InstructorManage = () => {
     const fetchData = async () => {
       try {
         const response = await fetchUserAPI(token);
-        if (response.data.role === "admin") {
+        if (response.data.role === "admin" || response.data.role === "major") {
           const data = await getInstructor(token);
           const majorData = await fetchMajorsAPI(token);
           setMajors(majorData);
@@ -94,6 +94,11 @@ const InstructorManage = () => {
       toast.error("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
+    const nameAndDegreeRegex = /^[a-zA-ZÀ-ỹ-\s]{5,}$/;
+    if (!nameAndDegreeRegex.test(name) || !nameAndDegreeRegex.test(degree)) {
+      toast.error("Tên hoặc bằng cấp không hợp lệ");
+      return;
+    }
     await editInstructor(selectedInstructor, token);
     const updatedInstructors = await getInstructor(token);
     setInstructors(updatedInstructors);
@@ -112,6 +117,14 @@ const InstructorManage = () => {
       ) {
         toast.error("Vui Lòng Điền đầy đủ thông tin");
       } else {
+        const nameAndDegreeRegex = /^[a-zA-ZÀ-ỹ-\s]{5,}$/;
+        if (
+          !nameAndDegreeRegex.test(name) ||
+          !nameAndDegreeRegex.test(degree)
+        ) {
+          toast.error("Tên hoặc bằng cấp không hợp lệ");
+          return;
+        }
         const response = await addInstructor(newInstructor, token);
         setInstructors([...instructors, response]);
         setNewInstructor({
@@ -121,6 +134,8 @@ const InstructorManage = () => {
           email: "",
           majorId: "",
         });
+
+        console.log(newInstructor);
         toast.success("Thêm giảng viên thành công");
       }
     } catch (error) {

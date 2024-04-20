@@ -26,7 +26,7 @@ function MajorManage() {
     const fetchData = async () => {
       try {
         const respone = await fetchUserAPI(token);
-        if (respone.data.role == "admin") {
+        if (respone.data.role == "admin" || respone.data.role === "major") {
           const data = await fetchMajorsAPI(token);
           setMajors(data);
         } else {

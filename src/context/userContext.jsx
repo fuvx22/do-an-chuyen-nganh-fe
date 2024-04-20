@@ -2,19 +2,23 @@ import axios from "axios";
 import { createContext, useState, useContext, useEffect } from "react";
 
 import { API_ROOT } from "../utils/constants";
-import { fetchUserAPI } from "../apis";
+import { fetchUserAPI, getImageUser } from "../apis";
 export const UserContext = createContext();
 // export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [imageUser, setImageUser] = useState(null);
   const [error, setError] = useState(null);
   let token = JSON.parse(localStorage.getItem("user-token"));
   const login = async (tk) => {
     try {
       token = tk;
       const response = await fetchUserAPI(token);
+      const responseImage = await getImageUser(token, response.data.image);
+      const imageURL = URL.createObjectURL(responseImage.data);
+      setImageUser(imageURL);
       setUserData(response.data);
       setRole(response.data.role);
     } catch (error) {
@@ -43,7 +47,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userData, error, login, role }}>
+    <UserContext.Provider value={{ userData, error, login, role, imageUser }}>
       {children}
     </UserContext.Provider>
   );

@@ -12,6 +12,8 @@ import Notify from "./pages/Notify";
 import CourseRegistration from "./pages/CoureRegistration";
 import Footer from "./components/Footer";
 import { UserProvider } from "./context/userContext";
+import UserManage from "./pages/UserManage";
+import ChangedPassword from "./pages/ChangedPassword";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
           <Route path="/notify-manage" element={<NotifyManage />} />
           <Route path="/notify/:id" element={<Notify />} />
           <Route path="/course-registration" element={<CourseRegistration />} />
+          <Route path="/user-manage" element={<UserManage />} />
+          <Route path="/change-password" element={<ChangedPassword />} />
         </Routes>
       </Router>
       <Footer></Footer>
