@@ -23,11 +23,13 @@ function CourseRegistration() {
   const [selectedMajor, setSelectedMajor] = useState("");
   const [findCourse, setFindCourse] = useState("");
   const [filtedcourseSchedules, setFiltedcourseSchedules] = useState([]);
-  const [majors, setMajors] = useState([]); 
+  const [majors, setMajors] = useState([]);
   let historyCourseRegis = useRef([]);
   let currentSemester = useRef({});
   const token = JSON.parse(localStorage.getItem("user-token"));
-  const [currentSemesterId, setCurrentSemesterId] = useState(metadata.current?.currentSemesterId);
+  const [currentSemesterId, setCurrentSemesterId] = useState(
+    metadata.current?.currentSemesterId
+  );
   const [isEnable, setIsEnable] = useState(
     metadata.current?.isEnableCourseRegistration
   );
@@ -56,11 +58,9 @@ function CourseRegistration() {
         currentSemester.current = data;
       });
     }
-
-
   }, [currentSemesterId]);
 
-  const fetchData = () => {
+  const fetchData = async () => {
     getCourseRegisByUserIdAPI(userData?._id, token).then((data) => {
       const currentSemesterCourseRegis = data.filter((cs) => {
         return cs.semesterId === currentSemesterId;
@@ -74,7 +74,7 @@ function CourseRegistration() {
 
   useEffect(() => {
     fetchData();
-  }, [userData]);
+  }, [userData, currentSemesterId]);
 
   useEffect(() => {
     if (selectedMajor == "" && findCourse == "") {
@@ -376,34 +376,38 @@ function CourseRegistration() {
                 <th scope="col">Thời khóa biểu</th>
               </tr>
             </thead>
-            <tbody className="table-bordered">
-              {selectedCourses.map((cs, idx) => (
-                <tr key={idx}>
-                  <td className="text-center">
-                    <button
-                      href=""
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteCourseRegis(cs)}
-                      disabled={!isEnable}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </td>
-                  <td>{cs?.course?.courseId}</td>
-                  <td>{cs?.course?.name}</td>
-                  <td>{cs?.group}</td>
-                  <td>{cs?.maxQuantity}</td>
-                  <td>{cs?.course?.courseCredits}</td>
-                  <td>
-                    {`${cs?.dayOfWeek}, tiết ${cs?.period[0]} đến ${
-                      cs?.period[cs?.period.length - 1]
-                    }, phòng ${cs?.roomNumber}, giảng viên ${
-                      cs?.instructor?.name
-                    }`}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            {!selectedCourses ? (
+              <h1>Loading</h1>
+            ) : (
+              <tbody className="table-bordered">
+                {selectedCourses.map((cs, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center">
+                      <button
+                        href=""
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleDeleteCourseRegis(cs)}
+                        disabled={!isEnable}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </td>
+                    <td>{cs?.course?.courseId}</td>
+                    <td>{cs?.course?.name}</td>
+                    <td>{cs?.group}</td>
+                    <td>{cs?.maxQuantity}</td>
+                    <td>{cs?.course?.courseCredits}</td>
+                    <td>
+                      {`${cs?.dayOfWeek}, tiết ${cs?.period[0]} đến ${
+                        cs?.period[cs?.period.length - 1]
+                      }, phòng ${cs?.roomNumber}, giảng viên ${
+                        cs?.instructor?.name
+                      }`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
           </table>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 import { fetchUserAPI, getImageUser } from "../apis";
 import { toast } from "react-toastify";
+
 function Navbar(props) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -23,31 +24,13 @@ function Navbar(props) {
       navigate("/");
     }
   };
-  const handleCheckInfo = () => {
-    if (token) {
-      navigate("/userBoard");
-    } else {
-      navigate("/");
-    }
-  };
-  const handleMajorManager = () => {
-    if (token) {
-      navigate("/major-manage");
-    } else {
-      navigate("/");
-    }
-  };
-  const handleInstructorManager = () => {
-    if (token) {
-      navigate("/instructor-manage");
-    } else {
-      navigate("/");
-    }
-  };
   const handleUsersManager = () => {
     if (token) {
       navigate("/user-manage");
-
+    } else {
+      navigate("/");
+    }
+  };
   const handleSemesterManager = () => {
     if (token) {
       navigate("/semester-manage");
@@ -58,14 +41,6 @@ function Navbar(props) {
   const handleCourseScheduleManager = () => {
     if (token) {
       navigate("/course-schedule-manage");
-
-    } else {
-      navigate("/");
-    }
-  };
-  const handleNotifyManager = () => {
-    if (token) {
-      navigate("/notify-manage");
     } else {
       navigate("/");
     }
@@ -146,60 +121,48 @@ function Navbar(props) {
               <li className="side-menu-option" onClick={handleUsersManager}>
                 Quản lí Tài Khoản
               </li>
+              <li
+                className="side-menu-option"
+                onClick={() => redirect("/instructor-manage")}
+              >
+                Quản lí Giảng Viên
+              </li>
+              <li
+                className="side-menu-option"
+                onClick={() => redirect("/course-manage")}
+              >
+                Quản lí môn học
+              </li>
+              <li
+                className="side-menu-option"
+                onClick={handleCourseScheduleManager}
+              >
+                Quản lí đăng ký môn học
+              </li>
+              <li
+                className="side-menu-option"
+                onClick={() => redirect("/major-manage")}
+              >
+                Quản lí khoa
+              </li>
+              <li className="side-menu-option" onClick={handleSemesterManager}>
+                Quản lí học kỳ
+              </li>
+              <li
+                className="side-menu-option"
+                onClick={() => redirect("/notify-manage")}
+              >
+                Quản lí thông báo
+              </li>
             </>
           ) : null}
-          <li className="side-menu-option" onClick={handleCheckInfo}>
-              Thông tin cá nhân
-          </li>
-          {role === "admin" && (
-            <li
-              className="side-menu-option"
-              onClick={() => redirect("/instructor-manage")}
-            >
-              Quản lí Giảng Viên
-            </li>
-          )}
-          {role === "admin" && (
-            <li
-              className="side-menu-option"
-              onClick={() => redirect("/course-manage")}
-            >
-              Quản lí môn học
-            </li>
-          )}
-          {role === "admin" && (
-            <li
-              className="side-menu-option"
-              onClick={handleCourseScheduleManager}
-            >
-              Quản lí đăng ký môn học
-            </li>
-          )}
-          {role === "admin" && (
-            <li
-              className="side-menu-option"
-              onClick={() => redirect("/major-manage")}
-            >
-              Quản lí khoa
-            </li>
-          )}
-          {role === "admin" && (
-            <li className="side-menu-option" onClick={handleSemesterManager}>
-              Quản lí học kỳ
-            </li>
-          )}
-          {role === "admin" && (
-            <li
-              className="side-menu-option"
-              onClick={() => redirect("/notify-manage")}
-            >
-              Quản lí thông báo
-            </li>
-          )}
+
           <li
             className="side-menu-option"
             onClick={() => redirect("/userBoard")}
-          >  
+          >
+            Thông tin cá nhân
+          </li>
           <li
             className="side-menu-option"
             onClick={() => redirect("/course-registration")}

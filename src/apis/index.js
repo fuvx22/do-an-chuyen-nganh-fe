@@ -238,7 +238,7 @@ export const getImageUser = async (token, dataimg) => {
       Authorization: `Bearer ${token.accessToken}`,
     },
   });
-    return response;
+  return response;
 };
 
 // Course Schedule
@@ -310,6 +310,12 @@ export const changePassword = async (token, data, body) => {
   const response = await axios.put(
     `${API_ROOT}/v1/user/update-password/${data.userId}`,
     body,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
   return response;
 };
 
@@ -329,21 +335,26 @@ export const getTimeScheduleAPI = async (userId, semesterId, token) => {
 //metadata
 
 export const getMetatdataAPI = async (token) => {
-  const response = await axios.get(`${API_ROOT}/v1/course-regis/metadata/config`,
-  {
-    headers: {
-      Authorization: `Bearer ${token.accessToken}`,
-    },
-  }
+  const response = await axios.get(
+    `${API_ROOT}/v1/course-regis/metadata/config`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
   );
   return response.data;
 };
 
 export const updateMetadataAPI = async (data, token) => {
-  const response = await axios.put(`${API_ROOT}/v1/course-regis/metadata/config`, data, {
-    headers: {
-      Authorization: `Bearer ${token.accessToken}`,
-    },
-  });
+  const response = await axios.put(
+    `${API_ROOT}/v1/course-regis/metadata/config`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
   return response.data;
 };
