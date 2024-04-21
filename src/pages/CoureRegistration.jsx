@@ -41,40 +41,44 @@ function CourseRegistration() {
       navigate("/");
     }
 
-    getMetatdataAPI(token).then((data) => {
-      metadata.current = data;
-      setIsEnable(data.isEnableCourseRegistration);
-      setCurrentSemesterId(data.currentSemesterId);
-    });
+  const fetchMetadata = getMetatdataAPI(token);
+  const fetchCourseSchedules = fetchCourseSchedulesBySemesterAPI(token, currentSemesterId);
+  const fetchMajors = fetchMajorsAPI(token);
+  const fetchSemester = currentSemesterId ? fetchSemesterByIdAPI(currentSemesterId) : Promise.resolve(null);
+  const fetchCourseRegis = getCourseRegisByUserIdAPI(userData?._id, token);
 
-    fetchCourseSchedulesBySemesterAPI(token, currentSemesterId).then((data) => {
-      setCourseSchedules(data);
-    });
+  Promise.all([fetchMetadata, fetchCourseSchedules, fetchMajors, fetchSemester, fetchCourseRegis])
+    .then(([metadataData, courseSchedulesData, majorsData, semesterData, courseRegisData]) => {
+      metadata.current = metadataData;
+      setIsEnable(metadataData.isEnableCourseRegistration);
+      setCurrentSemesterId(metadataData.currentSemesterId);
 
-    fetchMajorsAPI(token).then((data) => {
-      setMajors(data);
-    });
+      setCourseSchedules(courseSchedulesData);
+      setMajors(majorsData);
 
-    if (currentSemesterId) {
-      fetchSemesterByIdAPI(currentSemesterId).then((data) => {
-        currentSemester.current = data;
-      });
-    }
+      if (semesterData) {
+        currentSemester.current = semesterData;
+      }
 
-    getCourseRegisByUserIdAPI(userData?._id, token).then((data) => {
-      const currentSemesterCourseRegis = data.filter((cs) => {
+      const currentSemesterCourseRegis = courseRegisData.filter((cs) => {
         return cs.semesterId === currentSemesterId;
       });
-      historyCourseRegis.current = data.filter((cs) => {
+      historyCourseRegis.current = courseRegisData.filter((cs) => {
         return cs.semesterId !== currentSemesterId;
       });
       setSelectedCourses((prevCourses) => [
         ...prevCourses,
         ...currentSemesterCourseRegis,
       ]);
+
+    })
+    .then(() => {
+      setIsLoading(false);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
     });
 
-    setIsLoading(false);
   }, [currentSemesterId, userData]);
 
   const fetchData = async () => {
@@ -408,7 +412,7 @@ function CourseRegistration() {
             </thead>
             <tbody className="table-bordered">
               {selectedCourses &&
-                selectedCourses.map((cs, idx) => (
+                (selectedCourses.map((cs, idx) => (
                   <tr key={idx}>
                     <td className="text-center">
                       <button
@@ -433,7 +437,7 @@ function CourseRegistration() {
                       }`}
                     </td>
                   </tr>
-                ))}
+                )))}
             </tbody>
           </table>
         </div>
