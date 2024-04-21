@@ -2,15 +2,14 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import {
-    
-    fetchCourseSchedulesAPI,
-    createNewCourseScheduleAPI,
-    editCourseScheduleAPI,
-    deleteCourseScheduleAPI,
-    fetchSemestersAPI,
-    fetchCoursesAPI,
-    getInstructor,
-    fetchUserAPI,
+  fetchCourseSchedulesAPI,
+  createNewCourseScheduleAPI,
+  editCourseScheduleAPI,
+  deleteCourseScheduleAPI,
+  fetchSemestersAPI,
+  fetchCoursesAPI,
+  getInstructor,
+  fetchUserAPI,
 } from "../apis";
 import { semesterErrorClassify } from "../utils/validator";
 import { UserContext } from "../context/userContext";
@@ -36,6 +35,7 @@ function CourseScheduleManage() {
   const [courseSchedules, setCourseSchedules] = useState([]);
   const [courses, setCourses] = useState([]);
   const [instructors, setInstructors] = useState([]);
+
   const [semesters, setSemesters] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCourseSchedule, setSelectedCourseSchedule] = useState(null);
@@ -71,34 +71,37 @@ function CourseScheduleManage() {
     fetchData();
   }, []);
 
-  
-
   const navigate = useNavigate();
-  const[dayOfWeek, setDayOfWeek] = useState("");
-  const[period, setPeriod] = useState("");
-  const[startPeriod, setStartPeriod] = useState("");
-  const[endPeriod, setEndPeriod] = useState("");
-  const[group, setGroup] = useState("");
-  const[roomNumber, setRoomNumber] = useState("");
-  const[maxQuantity, setMaxQuantity] = useState("");
-  const[course, setCourse] = useState("");
-  const[instructor, setInstructor] = useState("");
-  const[semester, setSemester] = useState("");
-  
+  const [dayOfWeek, setDayOfWeek] = useState("");
+  const [period, setPeriod] = useState("");
+  const [startPeriod, setStartPeriod] = useState("");
+  const [endPeriod, setEndPeriod] = useState("");
+  const [group, setGroup] = useState("");
+  const [roomNumber, setRoomNumber] = useState("");
+  const [maxQuantity, setMaxQuantity] = useState("");
+  const [course, setCourse] = useState("");
+  const [instructor, setInstructor] = useState("");
+  const [semester, setSemester] = useState("");
+
   const [isEdit, setIsEdit] = useState(false);
   const courseScheduleIdRef = useRef(null);
 
   const handleAddCourseSchedule = async () => {
     if (
       dayOfWeek &&
-      startPeriod != "default" && startPeriod != "" &&
-      endPeriod != "default" && endPeriod != "" &&
+      startPeriod != "default" &&
+      startPeriod != "" &&
+      endPeriod != "default" &&
+      endPeriod != "" &&
       group &&
       roomNumber &&
       maxQuantity &&
-      courses != "default" && courses != "" &&
-      instructors != "default" && instructors != ""&&
-      semesters != "default" && semesters != "" 
+      courses != "default" &&
+      courses != "" &&
+      instructors != "default" &&
+      instructors != "" &&
+      semesters != "default" &&
+      semesters != ""
     ) {
       try {
         //const periodArray = period.toString().split('').map(Number);
@@ -119,11 +122,30 @@ function CourseScheduleManage() {
           semesterId: semester,
         };
 
-        const createdCourseSchedule = await createNewCourseScheduleAPI(newCourseSchedule, token);
+        const createdCourseSchedule = await createNewCourseScheduleAPI(
+          newCourseSchedule,
+          token
+        );
         setCourseSchedules([...courseSchedules, createdCourseSchedule]);
         cancelActivity();
         toast.success("Thêm thành công");
       } catch (error) {
+        if (error.response.data.error.includes("Trùng tiết học")) {
+          const errorMessage = error.response.data.error;
+          const courseIdRegex = /:\s*([a-f0-9]{24})/;
+          const match = errorMessage.match(courseIdRegex);
+          if (match && match[1]) {
+            const courseId = match[1];
+            const courseName = courses.find((c) => c._id == courseId)?.name;
+            return toast.error(
+              `Trùng tiết học/phòng học với môn ${courseName}`,
+              {
+                position: "top-center",
+                theme: "colored",
+              }
+            );
+          }
+        }
         toast.error(semesterErrorClassify(error), {
           position: "top-center",
           theme: "colored",
@@ -144,7 +166,11 @@ function CourseScheduleManage() {
     setDayOfWeek(courseSchedules[index].dayOfWeek);
     //setPeriod(courseSchedules[index].period.join(''));
     setStartPeriod(courseSchedules[index].period[0].toString());
-    setEndPeriod(courseSchedules[index].period[courseSchedules[index].period.length - 1].toString());
+    setEndPeriod(
+      courseSchedules[index].period[
+        courseSchedules[index].period.length - 1
+      ].toString()
+    );
     setGroup(courseSchedules[index].group);
     setRoomNumber(courseSchedules[index].roomNumber);
     setMaxQuantity(courseSchedules[index].maxQuantity);
@@ -155,35 +181,65 @@ function CourseScheduleManage() {
 
   const confirmEdit = async () => {
     //const periodArray = period.toString().split('').map(Number);
-    console.log(selectedCourseSchedule)
+    // console.log(selectedCourseSchedule);
     const periodArray = [];
-        for (let i = parseInt(selectedCourseSchedule.startPeriod); i <= parseInt(selectedCourseSchedule.endPeriod); i++) {
-          periodArray.push(i);
-        }
-        console.log(periodArray)
-
-        const { courseId, instructorId, semesterId, dayOfWeek, startPeriod, endPeriod, group, roomNumber, maxQuantity} = selectedCourseSchedule;
-    if (
-        courseId != "" ||
-        instructorId != "" ||
-        semesterId != "" ||
-        dayOfWeek != "" ||
-        startPeriod != "" ||
-        endPeriod != "" ||
-        group != "" ||
-        roomNumber != "" ||
-        maxQuantity != "" 
+    for (
+      let i = parseInt(selectedCourseSchedule.startPeriod);
+      i <= parseInt(selectedCourseSchedule.endPeriod);
+      i++
     ) {
-      
+      periodArray.push(i);
+    }
+    // console.log(periodArray);
+
+    const {
+      courseId,
+      instructorId,
+      semesterId,
+      dayOfWeek,
+      startPeriod,
+      endPeriod,
+      group,
+      roomNumber,
+      maxQuantity,
+    } = selectedCourseSchedule;
+
+    if (
+      courseId != "" ||
+      instructorId != "" ||
+      semesterId != "" ||
+      dayOfWeek != "" ||
+      startPeriod != "" ||
+      endPeriod != "" ||
+      group != "" ||
+      roomNumber != "" ||
+      maxQuantity != ""
+    ) {
       try {
-        selectedCourseSchedule.period = periodArray
-        console.log(selectedCourseSchedule.period)
+        selectedCourseSchedule.period = periodArray;
+        console.log(selectedCourseSchedule.period);
         await editCourseScheduleAPI(selectedCourseSchedule);
         const updatedCourseSchedule = await fetchCourseSchedulesAPI(token);
         setCourseSchedules(updatedCourseSchedule);
         toast.success("Cập nhật thành công");
-        closeModal()
+        closeModal();
       } catch (error) {
+        if (error.response.data.error.includes("Trùng tiết học")) {
+          const errorMessage = error.response.data.error;
+          const courseIdRegex = /:\s*([a-f0-9]{24})/;
+          const match = errorMessage.match(courseIdRegex);
+          if (match && match[1]) {
+            const courseId = match[1];
+            const courseName = courses.find((c) => c._id == courseId)?.name;
+            return toast.error(
+              `Trùng tiết học/phòng học với môn ${courseName}`,
+              {
+                position: "top-center",
+                theme: "colored",
+              }
+            );
+          }
+        }
         toast.error(semesterErrorClassify(error), {
           position: "top-center",
           theme: "colored",
@@ -197,10 +253,11 @@ function CourseScheduleManage() {
       });
       courseScheduleIdRef.current.focus();
     }
-  }
+  };
 
   const handleEditModal = async (courseSchedule) => {
-    setSelectedCourseSchedule(courseSchedule)
+    setSelectedCourseSchedule(courseSchedule);
+
     setIsOpen(true);
   };
 
@@ -219,32 +276,30 @@ function CourseScheduleManage() {
   };
 
   const cancelActivity = () => {
-    
     setDayOfWeek("");
-    setStartPeriod(""); 
+    setStartPeriod("");
     setEndPeriod("");
     setGroup("");
     setRoomNumber("");
     setMaxQuantity("");
     setCourse("");
     setInstructor("");
-    setSemester("")
-    setIsEdit(false)
+    setSemester("");
+    setIsEdit(false);
     indexToEdit = -1;
   };
 
-  
   const generatePeriod = () => {
     const options = [];
     for (let i = 1; i <= 10; i++) {
-      options.push(<option key={i} value={i}>{i}</option>);
+      options.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
     }
     return options;
   };
-  
-  
-
-  
 
   return (
     <div className="col-12 col-sm-10 col-md-8 m-auto">
@@ -330,8 +385,10 @@ function CourseScheduleManage() {
         </div>
         <div className="control-item">
           <div className="d-flex justify-content-between">
-            <div style={{flex: "0 0 45%"}}>
-              <label htmlFor="" className="form-label">Tiết bắt đầu</label>
+            <div style={{ flex: "0 0 45%" }}>
+              <label htmlFor="" className="form-label">
+                Tiết bắt đầu
+              </label>
               <select
                 value={startPeriod}
                 className="form-select"
@@ -343,8 +400,10 @@ function CourseScheduleManage() {
                 {generatePeriod()}
               </select>
             </div>
-            <div style={{flex: "0 0 45%"}}>
-              <label htmlFor="" className="form-label">Tiết kết thúc</label>
+            <div style={{ flex: "0 0 45%" }}>
+              <label htmlFor="" className="form-label">
+                Tiết kết thúc
+              </label>
               <select
                 value={endPeriod}
                 className="form-select"
@@ -401,7 +460,7 @@ function CourseScheduleManage() {
             id="maxQuantity"
           />
         </div>
-        
+
         <div className="control-item d-flex gap-2">
           <button
             className="btn btn-primary"
@@ -440,17 +499,18 @@ function CourseScheduleManage() {
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{courses.find((m) => m._id == c.courseId)?.name}</td>
-                <td>{instructors.find((m) => m._id == c.instructorId)?.name}</td>
-                <td>{semesters.find((m) => m._id == c.semesterId)?.semesterName}</td>
+                <td>
+                  {instructors.find((m) => m._id == c.instructorId)?.name}
+                </td>
+                <td>
+                  {semesters.find((m) => m._id == c.semesterId)?.semesterName}
+                </td>
                 <td>{c.dayOfWeek}</td>
                 <td>{c.period}</td>
                 <td>{c.group}</td>
                 <td>{c.roomNumber}</td>
                 <td>{c.maxQuantity}</td>
 
-                
-                
-                
                 <td style={{ minWidth: "110px", textAlign: "right" }}>
                   <button
                     onClick={() => {
@@ -461,18 +521,17 @@ function CourseScheduleManage() {
                     <i className="fas fa-edit"></i>
                   </button>
                   <button
-                      onClick={() => handleDeleteCourseSchedule(index)}
-                      className="btn btn-danger mx-1"
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
+                    onClick={() => handleDeleteCourseSchedule(index)}
+                    className="btn btn-danger mx-1"
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
                 </td>
                 <td></td>
               </tr>
             ))}
           </tbody>
         </table>
-
 
         <Modal
           isOpen={isOpen}
@@ -485,7 +544,7 @@ function CourseScheduleManage() {
           </div>
 
           <div className="modal-body">
-              <form>
+            <form>
               <div className="mb-3">
                 <label htmlFor="courseId" className="form-label">
                   Môn học
@@ -582,11 +641,13 @@ function CourseScheduleManage() {
                   <option value="Thứ 7">Thứ 7</option>
                 </select>
               </div>
-              
+
               <div className="mb-3">
                 <div className="d-flex justify-content-between">
-                  <div style={{flex: "0 0 45%"}}>
-                    <label htmlFor="" className="form-label">Tiết bắt đầu</label>
+                  <div style={{ flex: "0 0 45%" }}>
+                    <label htmlFor="" className="form-label">
+                      Tiết bắt đầu
+                    </label>
                     <select
                       className="form-select"
                       id="startPeriod"
@@ -597,13 +658,16 @@ function CourseScheduleManage() {
                           startPeriod: e.target.value,
                         })
                       }
-                    >period[courseSchedules[index].period.length - 1]
+                    >
+                      period[courseSchedules[index].period.length - 1]
                       <option value="default">Chọn tiết bắt đầu</option>
                       {generatePeriod()}
                     </select>
                   </div>
-                  <div style={{flex: "0 0 45%"}}>
-                    <label htmlFor="" className="form-label">Tiết kết thúc</label>
+                  <div style={{ flex: "0 0 45%" }}>
+                    <label htmlFor="" className="form-label">
+                      Tiết kết thúc
+                    </label>
                     <select
                       className="form-select"
                       id="endPeriod"
@@ -675,8 +739,7 @@ function CourseScheduleManage() {
                   }
                 />
               </div>
-              
-              </form>
+            </form>
           </div>
 
           <div className="modal-footer">
@@ -696,7 +759,6 @@ function CourseScheduleManage() {
             </button>
           </div>
         </Modal>
-
       </div>
     </div>
   );
